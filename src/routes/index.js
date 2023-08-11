@@ -13,48 +13,10 @@ import Login from '../View/Login';
 import splashScreen from '../View/SplashScreen';
 import Home from '../View/Home';
 import Account from '../View/Account';
+import DetailNasabah from '../View/DetailNasabah';
 // cuki tes kah
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
-
-function MainScreen() {
-  return (
-    <Tab.Navigator
-      activeColor={COLOR.PRIMARY}
-      shifting={false}
-      initialRouteName="Home"
-      headerShown={false}
-      barStyle={{backgroundColor: '#F3F2F2'}}>
-      <Tab.Screen
-        name="Main"
-        component={Home}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <Icon
-              name="home"
-              size={hp(3)}
-              color={focused ? COLOR.PRIMARY : 'gray'}
-            />
-          ),
-        }}
-      />
-
-      <Tab.Screen
-        name="Account"
-        component={Account}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <Icon
-              name="user"
-              size={hp(3)}
-              color={focused ? COLOR.PRIMARY : 'gray'}
-            />
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  );
-}
 
 const NavigationRoutes = () => {
   return (
@@ -62,9 +24,10 @@ const NavigationRoutes = () => {
       <Stack.Navigator
         screenOptions={{headerShown: false}}
         initialRouteName="SplashScreen">
-        <Stack.Screen name="Home" component={MainScreen} />
+        <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="SplashScreen" component={splashScreen} />
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="DetailNasabah" component={DetailNasabah} />
       </Stack.Navigator>
     </NavigationContainer>
   );

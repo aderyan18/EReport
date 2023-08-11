@@ -1,7 +1,7 @@
 export const COLOR = {
   WHITE: '#FFF',
-  PRIMARY: '#4c7c5c',
-  SECONDARYPRIMARY: '#a2bcab',
+  PRIMARY: '#2596be',
+  SECONDARYPRIMARY: '#009FFD',
   THIRD: '#dce6e0',
   GREY: '#C0C0C0',
   //   WHITE: '#ffffff',

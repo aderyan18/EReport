@@ -49,14 +49,14 @@ export default function Login({navigation}) {
         <View
           style={{
             width: wp(100),
-            backgroundColor: COLOR.SECONDARYPRIMARY,
+            backgroundColor: COLOR.WHITE,
             height: hp(100),
           }}>
           {/* Image Start */}
           <View style={[styles.ContainerImage]}>
             <Image
               style={[styles.Image]}
-              source={require('../../Assets/online-shop.png')}
+              source={require('../../Assets/business-report.png')}
             />
           </View>
           {/* Image End */}
@@ -89,7 +89,7 @@ export default function Login({navigation}) {
                 fontSize: wp(5),
                 marginBottom: wp(4),
                 borderColor: COLOR.PRIMARY,
-                backgroundColor: COLOR.SECONDARYPRIMARY,
+                backgroundColor: COLOR.WHITE,
                 alignSelf: 'center',
               }}></TextInput>
             <TextInput
@@ -105,7 +105,7 @@ export default function Login({navigation}) {
                 fontSize: wp(5),
                 marginBottom: wp(4),
                 borderColor: COLOR.PRIMARY,
-                backgroundColor: COLOR.SECONDARYPRIMARY,
+                backgroundColor: COLOR.WHITE,
                 width: wp(80),
                 alignSelf: 'center',
               }}></TextInput>

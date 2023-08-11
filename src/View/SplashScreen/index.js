@@ -26,7 +26,7 @@ class SplashScreen extends Component {
       <View style={[styles.container]}>
         <Image
           style={[styles.tinyLogo]}
-          source={require('../../Assets/icon-cashier.png')}
+          source={require('../../Assets/report.png')}
         />
         <Text
           style={{
@@ -36,7 +36,7 @@ class SplashScreen extends Component {
             color: COLOR.BLACK,
             marginTop: hp(2),
           }}>
-          E - Cashier
+          E - Report
         </Text>
         <Text
           style={{
@@ -44,7 +44,7 @@ class SplashScreen extends Component {
             textAlign: 'center',
             color: COLOR.BLACK,
           }}>
-          Point Of Sale
+          Report Application
         </Text>
         <Text style={[styles.footer]}>Powered by Dcc</Text>
       </View>
