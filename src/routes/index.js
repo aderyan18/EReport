@@ -14,6 +14,7 @@ import splashScreen from '../View/SplashScreen';
 import Home from '../View/Home';
 import Account from '../View/Account';
 import DetailNasabah from '../View/DetailNasabah';
+import CheckUser from '../View/CheckUser';
 // cuki tes kah
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -28,6 +29,7 @@ const NavigationRoutes = () => {
         <Stack.Screen name="SplashScreen" component={splashScreen} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="DetailNasabah" component={DetailNasabah} />
+        <Stack.Screen name="CheckUser" component={CheckUser} />
       </Stack.Navigator>
     </NavigationContainer>
   );

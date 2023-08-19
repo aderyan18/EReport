@@ -5,6 +5,7 @@ import {
   View,
   Image,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import React, {useState} from 'react';
 import {
@@ -16,8 +17,14 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {TextInput} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useNavigation} from '@react-navigation/native';
+import {BASE_URL_API} from '../../../env';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({navigation}) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [icon, setIcon] = useState({
     icon: 'eye',
     status: true,
@@ -41,6 +48,49 @@ export default function Login({navigation}) {
     if (e == '') {
       return true;
     }
+  };
+
+  const handleLogin = async () => {
+    setLoading(true);
+
+    if (username === '' || password === '') {
+      Alert.alert('Username dan Password tidak boleh kosong');
+      setLoading(false);
+      return;
+    }
+
+    const data = {
+      username: username,
+      password: password,
+    };
+
+    try {
+      const response = await axios.post(
+        `https://brisik.andexcargo.com/api/login`,
+        data,
+      );
+
+      if (response.data.success === true) {
+        if (response.data.token) {
+          const token = response.data.token;
+          console.log('LOGIN BERHASIL\n', response.data);
+          await AsyncStorage.setItem('token : ', token);
+        }
+        if (response.data.id) {
+          await AsyncStorage.setItem('id', response.data.id.toString());
+        }
+
+        navigation.replace('Home');
+      } else {
+        console.log('LOGIN GAGAL\n', response.data);
+        Alert.alert('Login gagal', 'Username atau Password salah');
+      }
+    } catch (error) {
+      console.log('LOGIN GAGAL\n', error);
+      Alert.alert('Login gagal', 'Terjadi kesalahan saat login');
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -80,6 +130,7 @@ export default function Login({navigation}) {
               mode="outlined"
               label="Name"
               underlineColor="transparent"
+              onChangeText={text => setUsername(text)}
               theme={{colors: {primary: COLOR.PRIMARY}}}
               style={{
                 height: wp(14),
@@ -97,6 +148,8 @@ export default function Login({navigation}) {
               label="Password"
               underlineColor="transparent"
               secureTextEntry={icon.status}
+              onChangeText={text => setPassword(text)}
+              value={password}
               theme={{colors: {primary: COLOR.PRIMARY}}}
               style={{
                 height: wp(14),
@@ -144,9 +197,21 @@ export default function Login({navigation}) {
           </View>
           {/* TextInput End */}
           <TouchableOpacity
-            style={[styles.ButtonMasuk]}
-            onPress={() => navigation.navigate('Home')}>
-            <Text style={{fontWeight: 'bold', color: COLOR.WHITE}}>MASUK</Text>
+            disabled={loading}
+            onPress={() => handleLogin()}
+            style={{
+              backgroundColor: loading ? 'grey' : COLOR.PRIMARY,
+              height: wp(10),
+              borderRadius: wp(2),
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: wp(80),
+              alignSelf: 'center',
+              top: wp(10),
+            }}>
+            <Text style={{fontWeight: 'bold', color: COLOR.WHITE}}>
+              {loading ? 'LOADING...' : 'MASUK'}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -175,15 +240,5 @@ const styles = StyleSheet.create({
     // backgroundColor: COLOR.BLUE,
     marginLeft: wp(5),
     marginTop: wp(20),
-  },
-  ButtonMasuk: {
-    backgroundColor: COLOR.PRIMARY,
-    height: wp(10),
-    borderRadius: wp(2),
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: wp(80),
-    alignSelf: 'center',
-    top: wp(10),
   },
 });

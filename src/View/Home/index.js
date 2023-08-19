@@ -82,7 +82,7 @@ export default function Home({navigation}) {
               backgroundColor: COLOR.WHITE,
               borderColor: COLOR.PRIMARY,
               borderWidth: 1,
-              height: wp(10),
+              height: wp(14),
             }}
           />
         </View>
