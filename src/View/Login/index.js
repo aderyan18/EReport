@@ -77,7 +77,8 @@ export default function Login({navigation}) {
           await AsyncStorage.setItem('token : ', token);
         }
         if (response.data.id) {
-          await AsyncStorage.setItem('id', response.data.id.toString());
+          const id = response.data.id.toString();
+          await AsyncStorage.setItem('id', id);
         }
 
         navigation.replace('Home');

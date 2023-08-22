@@ -1,5 +1,5 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {
   heightPercentageToDP as hp,
@@ -9,11 +9,45 @@ import {COLOR} from '../../Styles/color';
 import {ScrollView} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Searchbar} from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {BASE_URL_API} from '../../../env';
 
 export default function Home({navigation}) {
   const [searchQuery, setSearchQuery] = React.useState('');
   const onChangeSearch = query => setSearchQuery(query);
+  const [userInfo, setUserInfo] = useState({});
+  const [isUserLoaded, setIsUserLoaded] = useState(false);
 
+  const getUserInfo = async () => {
+    await AsyncStorage.getItem('id', async (err, id) => {
+      if (token) {
+        await AsyncStorage.getItem('id', async (err, id) => {
+          if (id) {
+            console.log('ID :', id, 'TOKEN :', token);
+            await axios
+              .get(`${BASE_URL_API}/user/${id}`, {
+                headers: {
+                  Authorization: `Bearer` + token,
+                  'Content-Type': 'application/json',
+                },
+              })
+              .then(async res => {
+                setUserInfo(res.data.data);
+                setIsUserLoaded(true);
+              })
+              .catch(err => {
+                console.log(err.response.data.message);
+              });
+          }
+        });
+      }
+    });
+  };
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
   return (
     <SafeAreaView>
       <View style={[styles.ContainerImage]}>
@@ -38,7 +72,7 @@ export default function Home({navigation}) {
               color: COLOR.BLACK,
               fontSize: wp(4),
             }}>
-            Hai, Admin
+            Hai, {userInfo.name}
           </Text>
         </View>
       </View>
