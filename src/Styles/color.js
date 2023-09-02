@@ -11,4 +11,5 @@ export const COLOR = {
   BLUE: '#0088FF',
   THIRD: '#FAE4C5',
   FOURTH: '#FEF9EF',
+  RED: '#d21404',
 };

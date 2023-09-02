@@ -10,9 +10,12 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {ScrollView} from 'react-native-gesture-handler';
+import SelectDropdown from 'react-native-select-dropdown';
+import {Button} from 'react-native-paper';
 
 export default function DetailNasabah({navigation}) {
   const [loading, setLoading] = useState(false);
+  const keterangan = ['Belum bayar', 'Lunas'];
 
   const options = {
     title: 'Select Image',
@@ -221,9 +224,10 @@ export default function DetailNasabah({navigation}) {
             height: wp(60),
             backgroundColor: COLOR.WHITE,
             borderColor: COLOR.SECONDARYPRIMARY,
-            borderWidth: wp(0.1),
-            top: wp(9),
+            borderWidth: wp(0.2),
+            marginTop: wp(9),
             alignSelf: 'center',
+            borderRadius: wp(2),
           }}>
           {/* {loading ? (
           <View
@@ -248,6 +252,62 @@ export default function DetailNasabah({navigation}) {
             }}
           />
         )} */}
+        </View>
+        <SelectDropdown
+          defaultButtonText="Pilih Keterangan Nasabah ..."
+          renderDropdownIcon={() => (
+            <Image
+              style={{height: wp(4), width: wp(4)}}
+              source={{
+                uri: 'https://cdn-icons-png.flaticon.com/128/32/32195.png',
+              }}
+            />
+          )}
+          buttonStyle={{
+            height: wp(14),
+            borderWidth: wp(0.2),
+            borderRadius: wp(2),
+            paddingHorizontal: wp(2),
+            fontSize: wp(5),
+            marginTop: wp(4),
+            borderColor: COLOR.PRIMARY,
+            backgroundColor: '#fff',
+            width: wp(90),
+            alignSelf: 'center',
+          }}
+          data={keterangan}
+          onSelect={(selectedItem, index) => {
+            console.log(selectedItem, index);
+          }}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            // text represented after item is selected
+            // if data array is an array of objects then return selectedItem.property to render after item is selected
+            return selectedItem;
+          }}
+          rowTextForSelection={(item, index) => {
+            // text represented for each item in dropdown
+            // if data array is an array of objects then return item.property to represent item in dropdown
+            return item;
+          }}
+        />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            padding: hp(3),
+          }}>
+          <Button
+            mode="contained"
+            onPress={() => navigation.goBack()}
+            style={{backgroundColor: COLOR.RED, width: wp(40)}}>
+            Batal
+          </Button>
+          <Button
+            mode="contained"
+            // onPress={() => handleSubmit()}
+            style={{backgroundColor: COLOR.PRIMARY, width: wp(40)}}>
+            Konfirmasi
+          </Button>
         </View>
       </ScrollView>
     </SafeAreaView>
