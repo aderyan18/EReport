@@ -12,9 +12,11 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {ScrollView} from 'react-native-gesture-handler';
 import SelectDropdown from 'react-native-select-dropdown';
 import {Button} from 'react-native-paper';
+import moment from 'moment/moment';
 
 export default function DetailNasabah({navigation}) {
   const [loading, setLoading] = useState(false);
+  const [dateFrom, setDateFrom] = useState(new Date());
   const keterangan = ['Belum bayar', 'Lunas'];
 
   const options = {
@@ -147,7 +149,10 @@ export default function DetailNasabah({navigation}) {
             <Text style={{fontSize: wp(5), color: COLOR.WHITE}}>
               Create a new report
             </Text>
-            <Text style={{color: COLOR.WHITE}}>22 - 08 - 2023</Text>
+            <Text style={{color: COLOR.WHITE}}>
+              {' '}
+              {moment(dateFrom).format('L')}
+            </Text>
           </View>
         </View>
         <View

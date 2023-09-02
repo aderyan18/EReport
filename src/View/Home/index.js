@@ -1,4 +1,11 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {
@@ -12,6 +19,7 @@ import {Searchbar} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {BASE_URL_API} from '../../../env';
+import {CommonActions} from '@react-navigation/native';
 
 export default function Home({navigation}) {
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -44,6 +52,35 @@ export default function Home({navigation}) {
       }
     });
   };
+  const handleLogout = () => {
+    Alert.alert('Peringatan', 'Yakin Ingin Keluar dari Bri-Sik ?', [
+      {
+        text: 'YA',
+        onPress: async () => {
+          //  await AsyncStorage.removeItem('token');
+          await AsyncStorage.removeItem('id');
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 1,
+              routes: [
+                {
+                  name: 'Login',
+                },
+              ],
+            }),
+          );
+        },
+        style: 'cancel',
+      },
+      {
+        text: 'Batal',
+        style: 'cancel',
+      },
+    ]);
+    {
+      cancelable: false;
+    }
+  };
 
   useEffect(() => {
     getUserInfo();
@@ -61,7 +98,7 @@ export default function Home({navigation}) {
             height: wp(30),
             // backgroundColor: COLOR.GREY,
             justifyContent: 'center',
-            marginRight: wp(3),
+            marginLeft: wp(3),
           }}>
           <Text
             style={{color: COLOR.BLACK, fontSize: wp(6), fontWeight: 'bold'}}>
@@ -75,6 +112,17 @@ export default function Home({navigation}) {
             Hai, {userInfo.name}
           </Text>
         </View>
+        <TouchableOpacity>
+          <Icon
+            name="sign-out"
+            size={wp(8)}
+            color={COLOR.SECONDARYPRIMARY}
+            style={{right: wp(10)}}
+            onPress={() => {
+              handleLogout();
+            }}
+          />
+        </TouchableOpacity>
       </View>
       <View style={[styles.ContainerContent]}>
         <View>
