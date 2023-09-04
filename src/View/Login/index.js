@@ -22,7 +22,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({navigation}) {
-  const [username, setUsername] = useState('');
+  const [pn, setPn] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [icon, setIcon] = useState({
@@ -53,38 +53,31 @@ export default function Login({navigation}) {
   const handleLogin = async () => {
     setLoading(true);
 
-    if (username === '' || password === '') {
-      Alert.alert('Username dan Password tidak boleh kosong');
+    if (pn === '' || password === '') {
+      Alert.alert('PN dan Password tidak boleh kosong');
       setLoading(false);
       return;
     }
 
     const data = {
-      username: username,
+      pn: pn,
       password: password,
     };
 
     try {
       const response = await axios.post(
-        `https://brisik.andexcargo.com/api/login`,
+        `http://brisik.andexcargo.com/api/v1/login`,
         data,
       );
 
-      if (response.data.success === true) {
-        if (response.data.token) {
-          const token = response.data.token;
-          console.log('LOGIN BERHASIL\n', response.data);
-          await AsyncStorage.setItem('token : ', token);
-        }
-        if (response.data.id) {
-          const id = response.data.id.toString();
-          await AsyncStorage.setItem('id', id);
-        }
-
+      if (response.data.code === 200) {
+        const token = response.data.token;
+        console.log('LOGIN BERHASIL\n', response.data);
+        await AsyncStorage.setItem('token', token);
         navigation.replace('Home');
       } else {
-        console.log('LOGIN GAGAL\n', response.data);
-        Alert.alert('Login gagal', 'Username atau Password salah');
+        console.log('LOGIN GAGAL\n', response.data.code);
+        Alert.alert('Login gagal', 'PN atau Password salah');
       }
     } catch (error) {
       console.log('LOGIN GAGAL\n', error);
@@ -129,9 +122,9 @@ export default function Login({navigation}) {
             }}>
             <TextInput
               mode="outlined"
-              label="Name"
+              label="PN"
               underlineColor="transparent"
-              onChangeText={text => setUsername(text)}
+              onChangeText={text => setPn(text)}
               theme={{colors: {primary: COLOR.PRIMARY}}}
               style={{
                 height: wp(14),

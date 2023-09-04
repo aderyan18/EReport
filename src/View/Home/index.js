@@ -20,45 +20,44 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {BASE_URL_API} from '../../../env';
 import {CommonActions} from '@react-navigation/native';
+import Debitur from './Component/Debitur';
 
 export default function Home({navigation}) {
   const [searchQuery, setSearchQuery] = React.useState('');
   const onChangeSearch = query => setSearchQuery(query);
   const [userInfo, setUserInfo] = useState({});
+
   const [isUserLoaded, setIsUserLoaded] = useState(false);
 
   const getUserInfo = async () => {
-    await AsyncStorage.getItem('id', async (err, id) => {
+    await AsyncStorage.getItem('token', async (err, token) => {
       if (token) {
-        await AsyncStorage.getItem('id', async (err, id) => {
-          if (id) {
-            console.log('ID :', id, 'TOKEN :', token);
-            await axios
-              .get(`${BASE_URL_API}/user/${id}`, {
-                headers: {
-                  Authorization: `Bearer` + token,
-                  'Content-Type': 'application/json',
-                },
-              })
-              .then(async res => {
-                setUserInfo(res.data.data);
-                setIsUserLoaded(true);
-              })
-              .catch(err => {
-                console.log(err.response.data.message);
-              });
-          }
-        });
+        console.log(token);
+        await axios
+          .get(`http://brisik.andexcargo.com/api/user`, {
+            headers: {
+              Authorization: `Bearer ` + token,
+              'Content-Type': 'application/json',
+            },
+          })
+          .then(async res => {
+            console.log('USER LOGIN\n', res.data);
+            setUserInfo(res.data);
+            setIsUserLoaded(true);
+          })
+          .catch(err => {
+            console.log(err.response.data.code);
+          });
       }
     });
   };
+
   const handleLogout = () => {
     Alert.alert('Peringatan', 'Yakin Ingin Keluar dari Bri-Sik ?', [
       {
         text: 'YA',
         onPress: async () => {
-          //  await AsyncStorage.removeItem('token');
-          await AsyncStorage.removeItem('id');
+          await AsyncStorage.removeItem('token');
           navigation.dispatch(
             CommonActions.reset({
               index: 1,
@@ -109,7 +108,7 @@ export default function Home({navigation}) {
               color: COLOR.BLACK,
               fontSize: wp(4),
             }}>
-            Hai, {userInfo.name}
+            Hai, {userInfo.nama}
           </Text>
         </View>
         <TouchableOpacity>
@@ -169,30 +168,7 @@ export default function Home({navigation}) {
           />
         </View>
         <ScrollView>
-          <TouchableOpacity
-            style={[styles.ListNasabah]}
-            onPress={() => navigation.navigate('DetailNasabah')}>
-            <Image
-              style={[styles.Image]}
-              source={require('../../Assets/book.png')}
-            />
-            <View>
-              <Text style={{color: COLOR.BLACK, fontSize: wp(5)}}>
-                Ade ryan
-              </Text>
-              <Text style={{color: COLOR.BLACK}}>Status : Belum Lunas</Text>
-              <Text style={{color: COLOR.BLACK}}>Ket : Belum keluar gaji</Text>
-            </View>
-            <View>
-              <Text style={{color: COLOR.BLACK}}>Kunjungan : 2</Text>
-            </View>
-            <Icon
-              name="chevron-right"
-              size={wp(8)}
-              color={COLOR.SECONDARYPRIMARY}
-              style={{alignSelf: 'center', right: wp(5)}}
-            />
-          </TouchableOpacity>
+          <Debitur navigation={navigation} />
         </ScrollView>
         <View style={{marginTop: wp(5)}}></View>
       </View>
