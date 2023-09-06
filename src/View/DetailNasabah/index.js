@@ -1,4 +1,11 @@
-import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  Alert,
+} from 'react-native';
 import React, {useState} from 'react';
 import {COLOR} from '../../Styles/color';
 import {
@@ -11,13 +18,43 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {ScrollView} from 'react-native-gesture-handler';
 import SelectDropdown from 'react-native-select-dropdown';
-import {Button} from 'react-native-paper';
+import {ActivityIndicator, Button, TextInput} from 'react-native-paper';
 import moment from 'moment/moment';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import axios from 'axios';
+import {BASE_URL_API} from '../../../env';
 
-export default function DetailNasabah({navigation}) {
+export default function DetailNasabah({navigation, route}) {
   const [loading, setLoading] = useState(false);
   const [dateFrom, setDateFrom] = useState(new Date());
   const keterangan = ['Belum bayar', 'Lunas'];
+  const debitur = route?.params?.item;
+  const [kunjungan, setKunjungan] = useState('');
+
+  const handleSubmitt = async () => {
+    const data = {
+      debitur_id: debitur.id,
+      kunjungan: kunjungan,
+      tanggal: dateFrom,
+      gambar: image,
+    };
+    await axios
+      .post(`${BASE_URL_API}/v1/aktivitas`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(res => {
+        console.log(res.data);
+        Alert.alert('Berhasil Menambah Aktivitas');
+        navigation.goBack();
+      })
+      .catch(err => {
+        console.log(err);
+        Alert.alert('Gagal Menambah Aktivitas');
+        setLoading(false);
+      });
+  };
 
   const options = {
     title: 'Select Image',
@@ -32,7 +69,7 @@ export default function DetailNasabah({navigation}) {
       path: 'images',
     },
   };
-  const bbbb = async response => {
+  const handleSubmit = async response => {
     if (image.length === 0) {
       Alert.alert('Silahkan ambil gambar!');
     } else {
@@ -40,12 +77,15 @@ export default function DetailNasabah({navigation}) {
         if (token) {
           setLoading(true);
           const data = new FormData();
-          data.append('name', 'avatar');
-          data.append('avatar', {
+          data.append('debitur_id', debitur.id);
+          data.append('tanggal', moment(dateFrom).format('YYYY-MM-DD'));
+          data.append('kunjungan', '1');
+          data.append('gambar', {
             uri: response.uri,
             type: response.type,
             name: response.fileName,
           });
+          console.log(data);
           const config = {
             method: 'POST',
             headers: {
@@ -55,51 +95,51 @@ export default function DetailNasabah({navigation}) {
             },
             body: data,
           };
-          fetch(`${API_BASE_URL}/Admin/images/avatar`, config)
+          fetch(`${BASE_URL_API}/v1/aktivitas`, config)
             .then(res => {
-              // console.log('RES PROFILE', res);
-              setLoading(false);
-              Alert.alert('Berhasil Mengubah Avatar');
-              navigation.navigate('MainScreen');
+              console.log('RES AKTIVITAS', res);
+              Alert.alert('Berhasil Menambah Aktifitas');
+              navigation.navigate('Home');
             })
             .catch(err => {
+              console.log(err);
+              Alert.alert('Gagal Menambah Aktifitas, Silahkan Coba Lagi');
+            })
+            .finally(() => {
               setLoading(false);
-              // console.log(err);
-              Alert.alert('Gagal Mengubah Avatar, Silahkan Coba Lagi');
             });
         } else setLoading(false);
       });
     }
   };
 
-  // const {profilePicture} = route?.params;
   const [image, setImage] = useState('');
 
-  // const selectPicture = () => {
-  //   setTimeout(() => {
-  //     launchImageLibrary(
-  //       {
-  //         mediaType: 'photo',
-  //         includeBase64: true,
-  //         maxHeight: 720,
-  //         maxWidth: 720,
-  //       },
-  //       async res => {
-  //         // console.log('RES URI', res.uri);
-  //         if (res.didCancel) {
-  //           console.log('User cancelled image picker');
-  //         } else if (res.error) {
-  //           console.log('ImagePicker Error: ', res.error);
-  //         } else if (res.customButton) {
-  //           console.log('User tapped custom button: ', res.customButton);
-  //           // alert(res.customButton);
-  //         } else {
-  //           setImage(res.assets[0]);
-  //         }
-  //       },
-  //     );
-  //   }, 500);
-  // };
+  const selectPicture = () => {
+    setTimeout(() => {
+      launchImageLibrary(
+        {
+          mediaType: 'photo',
+          includeBase64: true,
+          maxHeight: 720,
+          maxWidth: 720,
+        },
+        async res => {
+          // console.log('RES URI', res.uri);
+          if (res.didCancel) {
+            console.log('User cancelled image picker');
+          } else if (res.error) {
+            console.log('ImagePicker Error: ', res.error);
+          } else if (res.customButton) {
+            console.log('User tapped custom button: ', res.customButton);
+            // alert(res.customButton);
+          } else {
+            setImage(res.assets[0]);
+          }
+        },
+      );
+    }, 500);
+  };
 
   const takePicture = () => {
     launchCamera(
@@ -117,6 +157,27 @@ export default function DetailNasabah({navigation}) {
         }
       },
     );
+  };
+
+  // date time picker
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const [date, setDate] = useState(new Date());
+
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
+
+  const showDatePicker = () => {
+    setDatePickerVisible(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisible(false);
+  };
+
+  const handleConfirm = date => {
+    console.warn('A date has been picked: ', date);
+    setDate(new Date(date));
+    hideDatePicker();
   };
 
   return (
@@ -174,7 +235,7 @@ export default function DetailNasabah({navigation}) {
                 fontSize: wp(4),
                 marginLeft: wp(5),
               }}>
-              Nama Nasabah : Ade Ryan
+              Nama Nasabah : {debitur.nama}
             </Text>
             <Text
               style={{
@@ -183,7 +244,7 @@ export default function DetailNasabah({navigation}) {
                 marginLeft: wp(5),
                 marginTop: wp(2),
               }}>
-              Alamat : Jl. Raya Bogor
+              Alamat : {debitur.alamat}
             </Text>
 
             <Text
@@ -193,10 +254,72 @@ export default function DetailNasabah({navigation}) {
                 marginLeft: wp(5),
                 marginTop: wp(2),
               }}>
-              No. Rekening : 123456789
+              No. Rekening : {debitur.no_rekening}
             </Text>
           </View>
         </View>
+        {/* <View style={{marginTop: wp(5)}}>
+          <Text
+            style={{
+              color: COLOR.BLACK,
+              fontSize: wp(4),
+              marginLeft: wp(5),
+            }}>
+            Kunjungan ke :
+          </Text>
+          <TextInput
+            value={setKunjungan}
+            mode="flat"
+            theme={{colors: {primary: COLOR.BLUE}}}
+            keyboardType="number-pad"
+            style={{
+              height: wp(10),
+              width: wp(90),
+              borderRadius: wp(2),
+              fontSize: wp(5),
+              borderColor: COLOR.PRIMARY,
+              backgroundColor: COLOR.WHITE,
+              alignSelf: 'center',
+            }}
+          />
+        </View> */}
+        {/* DATE FROM */}
+        <Text
+          style={{
+            fontSize: wp(4),
+            marginBottom: wp(2),
+            color: COLOR.BLACK,
+            marginLeft: wp(5),
+            marginTop: wp(5),
+          }}>
+          Tanggal Kunjungan :
+        </Text>
+        <TouchableOpacity
+          onPress={() => showDatePicker()}
+          style={{
+            backgroundColor: COLOR.SECONDARYPRIMARY,
+            height: wp(14),
+            borderRadius: wp(2),
+            justifyContent: 'center',
+            width: wp(90),
+            alignSelf: 'center',
+            paddingLeft: wp(5),
+          }}>
+          <Text
+            style={{
+              fontSize: wp(5),
+              color: '#fff',
+            }}>
+            {moment(dateFrom).format('L')}
+          </Text>
+        </TouchableOpacity>
+        <DateTimePickerModal
+          isVisible={datePickerVisible}
+          mode="date"
+          onConfirm={handleConfirm}
+          onCancel={hideDatePicker}
+        />
+        {/* DATE FROM */}
         <TouchableOpacity
           onPress={() => takePicture()}
           style={{
@@ -234,67 +357,32 @@ export default function DetailNasabah({navigation}) {
             alignSelf: 'center',
             borderRadius: wp(2),
           }}>
-          {/* {loading ? (
-          <View
-            style={{
-              height: wp(30),
-              alignSelf: 'center',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <ActivityIndicator size={'large'} color={'#FFF'} />
-          </View>
-        ) : (
-          <Image
-            source={{
-              uri: !image && profilePicture ? profilePicture : image.uri,
-            }}
-            style={{
-              height: wp(30),
-              aspectRatio: 1,
-              alignSelf: 'center',
-              resizeMode: 'contain',
-            }}
-          />
-        )} */}
-        </View>
-        <SelectDropdown
-          defaultButtonText="Pilih Keterangan Nasabah ..."
-          renderDropdownIcon={() => (
+          {loading ? (
+            <View
+              style={{
+                height: wp(80),
+                width: wp(55),
+                alignSelf: 'center',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <ActivityIndicator size={'large'} color={'#FFF'} />
+            </View>
+          ) : (
             <Image
-              style={{height: wp(4), width: wp(4)}}
               source={{
-                uri: 'https://cdn-icons-png.flaticon.com/128/32/32195.png',
+                uri: !image ? image.uri : image.uri,
+              }}
+              style={{
+                width: wp(80),
+                height: wp(55),
+                aspectRatio: 1,
+                alignSelf: 'center',
+                resizeMode: 'contain',
               }}
             />
           )}
-          buttonStyle={{
-            height: wp(14),
-            borderWidth: wp(0.2),
-            borderRadius: wp(2),
-            paddingHorizontal: wp(2),
-            fontSize: wp(5),
-            marginTop: wp(4),
-            borderColor: COLOR.PRIMARY,
-            backgroundColor: '#fff',
-            width: wp(90),
-            alignSelf: 'center',
-          }}
-          data={keterangan}
-          onSelect={(selectedItem, index) => {
-            console.log(selectedItem, index);
-          }}
-          buttonTextAfterSelection={(selectedItem, index) => {
-            // text represented after item is selected
-            // if data array is an array of objects then return selectedItem.property to render after item is selected
-            return selectedItem;
-          }}
-          rowTextForSelection={(item, index) => {
-            // text represented for each item in dropdown
-            // if data array is an array of objects then return item.property to represent item in dropdown
-            return item;
-          }}
-        />
+        </View>
         <View
           style={{
             flexDirection: 'row',
@@ -309,7 +397,7 @@ export default function DetailNasabah({navigation}) {
           </Button>
           <Button
             mode="contained"
-            // onPress={() => handleSubmit()}
+            onPress={() => handleSubmit(image)}
             style={{backgroundColor: COLOR.PRIMARY, width: wp(40)}}>
             Konfirmasi
           </Button>

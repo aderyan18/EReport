@@ -61,7 +61,7 @@ export default function Debitur({navigation}) {
           <View key={index}>
             <TouchableOpacity
               style={[styles.ListNasabah]}
-              onPress={() => navigation.navigate('DetailNasabah')}>
+              onPress={() => navigation.navigate('DetailNasabah', {item})}>
               <Image
                 style={[styles.Image]}
                 source={require('../../../../Assets/book.png')}
