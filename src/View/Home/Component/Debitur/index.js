@@ -18,7 +18,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {Searchbar} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {BASE_URL_API} from '../../../env';
+import {BASE_URL_API} from '../../../../../env';
 import {CommonActions} from '@react-navigation/native';
 
 export default function Debitur({navigation}) {
@@ -32,7 +32,7 @@ export default function Debitur({navigation}) {
       if (token) {
         // console.log(token);
         await axios
-          .get(`http://brisik.andexcargo.com/api/v1/debitur`, {
+          .get(`${BASE_URL_API}/v1/debitur`, {
             headers: {
               Authorization: `Bearer ` + token,
               'Content-Type': 'application/json',

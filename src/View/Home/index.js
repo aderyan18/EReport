@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  RefreshControl,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -15,7 +16,7 @@ import {
 import {COLOR} from '../../Styles/color';
 import {ScrollView} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {Searchbar} from 'react-native-paper';
+import {ActivityIndicator, Searchbar} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {BASE_URL_API} from '../../../env';
@@ -26,15 +27,17 @@ export default function Home({navigation}) {
   const [searchQuery, setSearchQuery] = React.useState('');
   const onChangeSearch = query => setSearchQuery(query);
   const [userInfo, setUserInfo] = useState({});
-
+  let [isLoading, setIsLoading] = useState(true);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [debitur, setDebitur] = useState([]);
 
   const getUserInfo = async () => {
     await AsyncStorage.getItem('token', async (err, token) => {
       if (token) {
         console.log(token);
         await axios
-          .get(`http://brisik.andexcargo.com/api/user`, {
+          .get(`${BASE_URL_API}/user`, {
             headers: {
               Authorization: `Bearer ` + token,
               'Content-Type': 'application/json',
@@ -43,6 +46,30 @@ export default function Home({navigation}) {
           .then(async res => {
             console.log('USER LOGIN\n', res.data);
             setUserInfo(res.data);
+            setIsUserLoaded(true);
+            setIsLoading(false);
+          })
+          .catch(err => {
+            console.log(err.response.data.code);
+          });
+      }
+    });
+  };
+
+  const getDebitur = async () => {
+    await AsyncStorage.getItem('token', async (err, token) => {
+      if (token) {
+        // console.log(token);
+        await axios
+          .get(`${BASE_URL_API}/v1/debitur`, {
+            headers: {
+              Authorization: `Bearer ` + token,
+              'Content-Type': 'application/json',
+            },
+          })
+          .then(async res => {
+            setDebitur(res.data.data);
+            console.log('DEBITUR\n', res.data);
             setIsUserLoaded(true);
           })
           .catch(err => {
@@ -81,10 +108,24 @@ export default function Home({navigation}) {
     }
   };
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   useEffect(() => {
     getUserInfo();
-  }, []);
-  return (
+    getDebitur();
+  }, [refreshing]);
+  return isLoading ? (
+    <ActivityIndicator
+      size="large"
+      color={COLOR.PRIMARY}
+      style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+    />
+  ) : (
     <SafeAreaView>
       <View style={[styles.ContainerImage]}>
         <Image
@@ -167,7 +208,10 @@ export default function Home({navigation}) {
             }}
           />
         </View>
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
           <Debitur navigation={navigation} />
         </ScrollView>
         <View style={{marginTop: wp(5)}}></View>

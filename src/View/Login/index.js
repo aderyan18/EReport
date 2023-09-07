@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  ImageBackground,
 } from 'react-native';
 import React, {useState} from 'react';
 import {
@@ -15,7 +16,7 @@ import {
 import {COLOR} from '../../Styles/color';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {TextInput} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/EvilIcons';
 import {useNavigation} from '@react-navigation/native';
 import {BASE_URL_API} from '../../../env';
 import axios from 'axios';
@@ -33,7 +34,7 @@ export default function Login({navigation}) {
     if (icon.icon == 'eye') {
       setIcon({
         ...icon,
-        icon: 'eye-slash',
+        icon: 'minus',
         status: false,
       });
     } else {
@@ -89,126 +90,138 @@ export default function Login({navigation}) {
 
   return (
     <SafeAreaView>
-      <ScrollView>
-        <View
-          style={{
-            width: wp(100),
-            backgroundColor: COLOR.WHITE,
-            height: hp(100),
-          }}>
-          {/* Image Start */}
-          <View style={[styles.ContainerImage]}>
-            <Image
-              style={[styles.Image]}
-              source={require('../../Assets/business-report.png')}
-            />
-          </View>
-          {/* Image End */}
-
-          {/* Login Text Start */}
-          <View style={[styles.LoginContainer]}>
-            <Text
-              style={{fontSize: wp(7), fontWeight: 'bold', color: COLOR.BLACK}}>
-              LOGIN
-            </Text>
-          </View>
-          {/* Login Text End */}
-
-          {/* TextInput Start */}
+      <ImageBackground
+        source={require('../../Assets/bg.png')}
+        style={{
+          justifyContent: 'center',
+          height: wp(200),
+        }}>
+        <ScrollView>
           <View
             style={{
-              width: '100%',
-              marginTop: wp(5),
+              width: wp(100),
+              // backgroundColor: COLOR.WHITE,
+              height: hp(100),
             }}>
-            <TextInput
-              mode="outlined"
-              label="PN"
-              underlineColor="transparent"
-              onChangeText={text => setPn(text)}
-              theme={{colors: {primary: COLOR.PRIMARY}}}
+            {/* Image Start */}
+            <View style={[styles.ContainerImage]}>
+              <Image
+                style={[styles.Image]}
+                source={require('../../Assets/business-report.png')}
+              />
+            </View>
+            {/* Image End */}
+
+            <View
               style={{
-                height: wp(14),
                 width: wp(80),
-                borderRadius: wp(2),
-                paddingHorizontal: wp(6),
-                fontSize: wp(5),
-                marginBottom: wp(4),
-                borderColor: COLOR.PRIMARY,
+                height: wp(100),
+                // position: 'absolute',
+                bottom: 0,
                 backgroundColor: COLOR.WHITE,
-                alignSelf: 'center',
-              }}></TextInput>
-            <TextInput
-              mode="outlined"
-              label="Password"
-              underlineColor="transparent"
-              secureTextEntry={icon.status}
-              onChangeText={text => setPassword(text)}
-              value={password}
-              theme={{colors: {primary: COLOR.PRIMARY}}}
-              style={{
-                height: wp(14),
-                borderRadius: wp(2),
-                paddingHorizontal: wp(6),
-                fontSize: wp(5),
-                marginBottom: wp(4),
-                borderColor: COLOR.PRIMARY,
-                backgroundColor: COLOR.WHITE,
-                width: wp(80),
-                alignSelf: 'center',
-              }}></TextInput>
-            <TouchableOpacity
-              style={{
-                width: wp(15),
-                height: wp(8),
-                // backgroundColor: COLOR.BLUE,
-                position: 'absolute',
-                right: wp(8),
-                top: wp(25),
-                borderRadius: wp(2),
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}
-              onPress={showPass}>
-              <Icon name={icon.icon} color={COLOR.PRIMARY} size={wp(6)} />
-            </TouchableOpacity>
+                alignSelf: 'center',
+                zIndex: 1,
+                // marginTop: wp(10),
+                borderRadius: wp(5),
+                borderColor: COLOR.PRIMARY,
+                borderWidth: wp(0.2),
+              }}>
+              {/* Login Text Start */}
+              <Text
+                style={{
+                  fontSize: wp(5),
+                  color: COLOR.BLACK,
+                  bottom: wp(3),
+                  fontStyle: 'italic',
+                }}>
+                E - R e p o r t
+              </Text>
+              <View style={[styles.LoginContainer]}>
+                <Text
+                  style={{
+                    fontSize: wp(7),
+                    fontWeight: 'bold',
+                    color: COLOR.BLACK,
+                    textAlign: 'center',
+                  }}>
+                  Sign in
+                </Text>
+              </View>
+              {/* Login Text End */}
 
-            <Icon
-              name="user"
-              color={COLOR.PRIMARY}
-              size={wp(7)}
-              style={{position: 'absolute', left: wp(13), top: wp(5)}}
-            />
-            <Icon
-              name="lock"
-              color={COLOR.PRIMARY}
-              size={wp(7)}
-              style={{position: 'absolute', left: wp(13), top: wp(26)}}
-            />
-            <TouchableOpacity
-              style={{alignItems: 'flex-end', paddingRight: wp(10)}}>
-              <Text style={{color: COLOR.BLACK}}>Lupa Kata Sandi ?</Text>
-            </TouchableOpacity>
+              {/* TextInput Start */}
+              <View
+                style={{
+                  width: '100%',
+                  top: wp(5),
+                }}>
+                <TextInput
+                  placeholder="PN"
+                  underlineColor="transparent"
+                  onChangeText={text => setPn(text)}
+                  theme={{colors: {primary: COLOR.GREY}}}
+                  style={[styles.TxtPN]}
+                  left={
+                    <TextInput.Icon name="account" color={COLOR.BLUE} />
+                  }></TextInput>
+                <TextInput
+                  placeholder="Password"
+                  underlineColor="transparent"
+                  secureTextEntry={icon.status}
+                  onChangeText={text => setPassword(text)}
+                  value={password}
+                  theme={{colors: {primary: COLOR.GREY}}}
+                  style={[styles.TxtPass]}
+                  left={
+                    <TextInput.Icon name="lock" color={COLOR.BLUE} />
+                  }></TextInput>
+                <TouchableOpacity style={[styles.showEye]} onPress={showPass}>
+                  <Icon
+                    name={icon.icon}
+                    color={COLOR.SECONDARYPRIMARY}
+                    size={wp(10)}
+                  />
+                </TouchableOpacity>
+
+                <Icon
+                  name="user"
+                  color={COLOR.SECONDARYPRIMARY}
+                  size={wp(10)}
+                  style={{position: 'absolute', left: wp(3), top: wp(4)}}
+                />
+                <Icon
+                  name="lock"
+                  color={COLOR.SECONDARYPRIMARY}
+                  size={wp(10)}
+                  style={{position: 'absolute', left: wp(3), top: wp(22)}}
+                />
+              </View>
+              {/* TextInput End */}
+              <TouchableOpacity
+                disabled={loading}
+                onPress={() => handleLogin()}
+                style={{
+                  backgroundColor: loading ? 'grey' : COLOR.BLUE,
+                  height: wp(10),
+                  borderRadius: wp(2),
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: wp(75),
+                  alignSelf: 'center',
+                  top: wp(10),
+                  borderRadius: wp(1),
+                  borderColor: COLOR.WHITE,
+                }}>
+                <Text style={{fontWeight: 'bold', color: COLOR.WHITE}}>
+                  {loading ? 'LOADING...' : 'MASUK'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          {/* TextInput End */}
-          <TouchableOpacity
-            disabled={loading}
-            onPress={() => handleLogin()}
-            style={{
-              backgroundColor: loading ? 'grey' : COLOR.PRIMARY,
-              height: wp(10),
-              borderRadius: wp(2),
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: wp(80),
-              alignSelf: 'center',
-              top: wp(10),
-            }}>
-            <Text style={{fontWeight: 'bold', color: COLOR.WHITE}}>
-              {loading ? 'LOADING...' : 'MASUK'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 }
@@ -216,23 +229,58 @@ export default function Login({navigation}) {
 const styles = StyleSheet.create({
   Image: {
     justifyContent: 'center',
-    width: wp(40),
-    height: hp(20),
+    width: wp(30),
+    height: hp(15),
     alignSelf: 'center',
   },
   ContainerImage: {
     width: wp(50),
     height: hp(25),
-    // backgroundColor: COLOR.WHITE,
+    // backgroundColor: COLOR.RED,
     alignSelf: 'center',
-    top: wp(10),
+    alignItems: 'center',
+    justifyContent: 'center',
+    // top: wp(10),
     // borderRadius: wp(25),
   },
   LoginContainer: {
-    width: wp(25),
-    height: hp(5),
+    width: wp(75),
+    // height: hp(5),
     // backgroundColor: COLOR.BLUE,
-    marginLeft: wp(5),
-    marginTop: wp(20),
+  },
+  TxtPass: {
+    height: wp(14),
+    borderRadius: wp(2),
+    // paddingHorizontal: wp(6),
+    fontSize: wp(5),
+    marginBottom: wp(4),
+    borderColor: COLOR.GREY,
+    backgroundColor: COLOR.WHITE,
+    width: wp(75),
+    alignSelf: 'center',
+    borderWidth: wp(0.3),
+  },
+  showEye: {
+    width: wp(15),
+    height: wp(8),
+    // backgroundColor: COLOR.BLUE,
+    position: 'absolute',
+    right: wp(4),
+    top: wp(22),
+    borderRadius: wp(2),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  TxtPN: {
+    height: wp(14),
+    width: wp(75),
+    borderRadius: wp(2),
+    // paddingHorizontal: wp(6),
+    fontSize: wp(5),
+    marginBottom: wp(4),
+    borderColor: COLOR.GREY,
+    backgroundColor: COLOR.WHITE,
+    alignSelf: 'center',
+    borderWidth: wp(0.3),
   },
 });
