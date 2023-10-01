@@ -160,10 +160,6 @@ export default function DetailNasabah({navigation, route}) {
   };
 
   // date time picker
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-
-  const [date, setDate] = useState(new Date());
-
   const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   const showDatePicker = () => {
@@ -176,7 +172,7 @@ export default function DetailNasabah({navigation, route}) {
 
   const handleConfirm = date => {
     console.warn('A date has been picked: ', date);
-    setDate(new Date(date));
+    setDateFrom(new Date(date));
     hideDatePicker();
   };
 
@@ -192,20 +188,13 @@ export default function DetailNasabah({navigation, route}) {
             justifyContent: 'space-around',
             alignItems: 'center',
           }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon
-              name="arrow-left"
-              size={wp(10)}
-              color={COLOR.WHITE}
-              style={{alignSelf: 'flex-start'}}
-            />
-          </TouchableOpacity>
           <View
             style={{
               width: wp(70),
               height: wp(20),
               // backgroundColor: COLOR.GREY,
               justifyContent: 'center',
+              alignItems: 'center',
             }}>
             <Text style={{fontSize: wp(5), color: COLOR.WHITE}}>
               Create a new report
@@ -235,7 +224,8 @@ export default function DetailNasabah({navigation, route}) {
                 fontSize: wp(4),
                 marginLeft: wp(5),
               }}>
-              Nama Nasabah : {debitur.nama}
+              <Text style={{fontWeight: 'bold'}}>Nama Nasabah :</Text>{' '}
+              {debitur.nama}
             </Text>
             <Text
               style={{
@@ -244,7 +234,8 @@ export default function DetailNasabah({navigation, route}) {
                 marginLeft: wp(5),
                 marginTop: wp(2),
               }}>
-              Alamat : {debitur.alamat}
+              <Text style={{fontWeight: 'bold'}}>Alamat :</Text>{' '}
+              {debitur.alamat}
             </Text>
 
             <Text
@@ -254,7 +245,8 @@ export default function DetailNasabah({navigation, route}) {
                 marginLeft: wp(5),
                 marginTop: wp(2),
               }}>
-              No. Rekening : {debitur.no_rekening}
+              <Text style={{fontWeight: 'bold'}}>No. Rekening :</Text>{' '}
+              {debitur.no_rekening}
             </Text>
           </View>
         </View>
@@ -349,7 +341,7 @@ export default function DetailNasabah({navigation, route}) {
         <View
           style={{
             width: wp(90),
-            height: wp(60),
+            height: wp(70),
             backgroundColor: COLOR.WHITE,
             borderColor: COLOR.SECONDARYPRIMARY,
             borderWidth: wp(0.2),
@@ -357,6 +349,26 @@ export default function DetailNasabah({navigation, route}) {
             alignSelf: 'center',
             borderRadius: wp(2),
           }}>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignSelf: 'center',
+              width: wp(80),
+              height: wp(55),
+              position: 'absolute',
+              // backgroundColor: COLOR.BLACK,
+            }}>
+            <Icon
+              name="exclamation"
+              size={wp(20)}
+              color={COLOR.RED}
+              style={{
+                alignSelf: 'center',
+                justifyContent: 'center',
+                top: wp(5),
+              }}
+            />
+          </View>
           {loading ? (
             <View
               style={{
@@ -366,7 +378,7 @@ export default function DetailNasabah({navigation, route}) {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <ActivityIndicator size={'large'} color={'#FFF'} />
+              <ActivityIndicator size={'large'} color={COLOR.PRIMARY} />
             </View>
           ) : (
             <Image
@@ -375,10 +387,11 @@ export default function DetailNasabah({navigation, route}) {
               }}
               style={{
                 width: wp(80),
-                height: wp(55),
+                height: wp(60),
                 aspectRatio: 1,
                 alignSelf: 'center',
                 resizeMode: 'contain',
+                top: wp(5),
               }}
             />
           )}

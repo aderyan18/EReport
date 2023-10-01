@@ -171,7 +171,7 @@ export default function Home({navigation}) {
               color: COLOR.BLACK,
               fontSize: wp(5),
               fontWeight: 'bold',
-              marginLeft: wp(5),
+              marginLeft: wp(9),
               marginTop: wp(5),
             }}>
             Daftar Nasabah
@@ -208,12 +208,9 @@ export default function Home({navigation}) {
             }}
           />
         </View>
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }>
-          <Debitur navigation={navigation} />
-        </ScrollView>
+
+        <Debitur navigation={navigation} searchQuery={searchQuery} />
+        {/* </ScrollView> */}
         <View style={{marginTop: wp(5)}}></View>
       </View>
     </SafeAreaView>

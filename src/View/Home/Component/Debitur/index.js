@@ -1,106 +1,191 @@
 import {
-  Alert,
+  ActivityIndicator,
   Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  FlatList,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {COLOR} from '../../../../Styles/color';
-import {ScrollView} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {Searchbar} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {BASE_URL_API} from '../../../../../env';
-import {CommonActions} from '@react-navigation/native';
 
-export default function Debitur({navigation}) {
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const onChangeSearch = query => setSearchQuery(query);
+export default function Debitur({navigation, searchQuery}) {
+  // const onChangeSearch = query => setSearchQuery(query);
   const [debitur, setDebitur] = useState([]);
-  const [isUserLoaded, setIsUserLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMoreData, setHasMoreData] = useState(true);
 
-  const getDebitur = async () => {
-    await AsyncStorage.getItem('token', async (err, token) => {
-      if (token) {
-        // console.log(token);
-        await axios
-          .get(`${BASE_URL_API}/v1/debitur`, {
+  // const fetchData = async () => {
+  //   if (isLoading) {
+  //     return;
+  //   }
+  //   setIsLoading(true);
+
+  //   try {
+  //     const userToken = await AsyncStorage.getItem('token');
+
+  //     if (userToken) {
+  //       const response = await axios.get(`${BASE_URL_API}/v1/debitur`, {
+  //         headers: {
+  //           Authorization: `Bearer ${userToken}`,
+  //           'Content-Type': 'application/json',
+  //         },
+  //         params: {
+  //           page: currentPage,
+  //         },
+  //       });
+
+  //       const newData = response.data.data;
+
+  //       if (newData.length > 0) {
+  //         setDebitur(prevData => [...prevData, ...newData]);
+  //         setCurrentPage(currentPage + 1);
+  //       } else {
+  //         setHasMoreData(false);
+  //       }
+  //     } else {
+  //       setHasMoreData(false);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching data:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  const fetchData = async () => {
+    if (!isLoading && hasMoreData) {
+      setIsLoading(true);
+      try {
+        const userToken = await AsyncStorage.getItem('token');
+        if (userToken) {
+          const response = await axios.get(`${BASE_URL_API}/v1/debitur`, {
             headers: {
-              Authorization: `Bearer ` + token,
+              Authorization: `Bearer ${userToken}`,
               'Content-Type': 'application/json',
             },
-          })
-          .then(async res => {
-            setDebitur(res.data.data);
-            console.log('DEBITUR\n', res.data);
-            setIsUserLoaded(true);
-          })
-          .catch(err => {
-            console.log(err.response.data.code);
+            params: {
+              page: currentPage,
+            },
           });
+
+          const newData = response.data.data;
+
+          if (newData.length > 0) {
+            setDebitur([...debitur, ...newData]);
+            setCurrentPage(currentPage + 1);
+          } else {
+            // Tidak ada data tambahan yang ditemukan
+            setHasMoreData(false);
+          }
+        } else {
+          // Tidak ada token
+          setHasMoreData(false);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
       }
-    });
+    }
   };
 
-  useEffect(() => {
-    getDebitur();
-    console.log('debitur :', debitur);
-  }, []);
-  return (
-    <View>
-      {debitur.map((item, index) => {
-        return (
-          <View key={index}>
-            <TouchableOpacity
-              style={[styles.ListNasabah]}
-              onPress={() => navigation.navigate('DetailNasabah', {item})}>
-              <Image
-                style={[styles.Image]}
-                source={require('../../../../Assets/book.png')}
-              />
-              <View>
-                <Text style={{color: COLOR.BLACK, fontSize: wp(4.5)}}>
-                  {item.nama}
-                </Text>
-                <Text style={{color: COLOR.BLACK}}>Alamat : {item.alamat}</Text>
-                <Text style={{color: COLOR.BLACK}}>
-                  Rekening : {item.no_rekening}
-                </Text>
-              </View>
+  const handleLoadMore = () => {
+    fetchData();
+  };
 
-              <Icon
-                name="chevron-right"
-                size={wp(8)}
-                color={COLOR.SECONDARYPRIMARY}
-                style={{
-                  alignSelf: 'center',
-                  right: wp(5),
-                  position: 'absolute',
-                }}
-              />
-            </TouchableOpacity>
-          </View>
-        );
-      })}
+  // Memfilter data debitur berdasarkan searchQuery
+  const filteredDebitur = debitur.filter(item =>
+    item.nama.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  useEffect(() => {
+    fetchData();
+  }, [searchQuery]);
+
+  const renderListItem = ({item}) => (
+    <TouchableOpacity
+      style={styles.ListNasabah}
+      onPress={() => navigation.navigate('DetailNasabah', {item})}>
+      <Image
+        style={styles.Image}
+        source={require('../../../../Assets/book.png')}
+      />
+      <View style={styles.ListContent}>
+        <Text style={styles.Nama}>{item.nama}</Text>
+        <Text style={styles.BlackText} numberOfLines={1}>
+          <Text style={styles.BoldText}>Alamat:</Text> {item.alamat}
+        </Text>
+        <Text style={styles.BlackText}>
+          <Text style={styles.BoldText}>Rekening :</Text> {item.no_rekening}
+        </Text>
+      </View>
+      <Icon
+        name="chevron-right"
+        size={wp(7)}
+        color={COLOR.SECONDARYPRIMARY}
+        style={styles.Icon}
+      />
+    </TouchableOpacity>
+  );
+  return (
+    <View style={{flex: 1}}>
+      {filteredDebitur.length === 0 && !isLoading ? (
+        <View style={styles.NoDataContainer}>
+          <Image
+            source={require('../../../../Assets/search.png')}
+            style={styles.NoDataImage}
+          />
+          <Text style={styles.NoDataText}>Data Tidak Ditemukan</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredDebitur}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderListItem}
+          onEndReached={fetchData}
+          windowSize={10}
+          onEndReachedThreshold={0.5} // Ubah nilai ini sesuai preferensi Anda
+          ListFooterComponent={() => (
+            <View style={styles.FooterContainer}>
+              {isLoading ? (
+                <ActivityIndicator size="large" color={COLOR.PRIMARY} />
+              ) : !hasMoreData ? (
+                <Text style={styles.FooterText}>Tidak ada data tambahan</Text>
+              ) : null}
+            </View>
+          )}
+        />
+      )}
+      {/* Tampilkan pesan jika tidak ada data cocok dengan pencarian */}
+      {!isLoading && filteredDebitur.length === 0 && (
+        <View style={styles.NoDataMessage}>
+          <Text style={styles.NoDataMessageText}>
+            Tidak ada data yang cocok.
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   Image: {
-    width: wp(18),
-    height: wp(18),
+    width: wp(13),
+    height: wp(13),
     backgroundColor: COLOR.WHITE,
     alignSelf: 'center',
-    marginLeft: wp(5),
+    marginLeft: wp(3),
   },
   ContainerImage: {
     width: wp(100),
@@ -126,13 +211,66 @@ const styles = StyleSheet.create({
   ListNasabah: {
     backgroundColor: COLOR.WHITE,
     width: wp(90),
-    height: wp(25),
-    marginTop: wp(3),
+    height: wp(24),
+    marginTop: wp(4.5),
     alignSelf: 'center',
     borderRadius: wp(5),
     justifyContent: 'flex-start',
     borderWidth: 1,
     borderColor: COLOR.PRIMARY,
     flexDirection: 'row',
+  },
+  ListContent: {
+    width: wp(65),
+    height: wp(22),
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+  },
+  Nama: {
+    color: COLOR.SECONDARYPRIMARY,
+    fontSize: wp(4.5),
+  },
+  BlackText: {
+    color: COLOR.BLACK,
+  },
+  BoldText: {
+    fontWeight: 'bold',
+  },
+  Icon: {
+    alignSelf: 'center',
+    right: wp(1),
+    position: 'absolute',
+  },
+  NoDataContainer: {
+    alignItems: 'center',
+    marginTop: hp(20),
+  },
+  NoDataImage: {
+    alignSelf: 'center',
+    width: wp(30),
+    height: wp(30),
+  },
+  NoDataText: {
+    color: COLOR.BLACK,
+    fontSize: wp(4.5),
+    alignSelf: 'center',
+    marginTop: hp(2),
+  },
+  FooterText: {
+    textAlign: 'center',
+    marginVertical: 10,
+    color: COLOR.BLACK,
+  },
+  NoDataMessage: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  NoDataMessageText: {
+    color: 'white',
+  },
+  FooterContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: wp(2),
   },
 });

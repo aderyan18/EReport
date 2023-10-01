@@ -160,6 +160,7 @@ export default function Login({navigation}) {
                 <TextInput
                   placeholder="PN"
                   underlineColor="transparent"
+                  keyboardType={'number-pad'}
                   onChangeText={text => setPn(text)}
                   theme={{colors: {primary: COLOR.GREY}}}
                   style={[styles.TxtPN]}
@@ -189,13 +190,13 @@ export default function Login({navigation}) {
                   name="user"
                   color={COLOR.SECONDARYPRIMARY}
                   size={wp(10)}
-                  style={{position: 'absolute', left: wp(3), top: wp(4)}}
+                  style={{position: 'absolute', left: wp(5), top: wp(3)}}
                 />
                 <Icon
                   name="lock"
                   color={COLOR.SECONDARYPRIMARY}
                   size={wp(10)}
-                  style={{position: 'absolute', left: wp(3), top: wp(22)}}
+                  style={{position: 'absolute', left: wp(5), top: wp(21)}}
                 />
               </View>
               {/* TextInput End */}
