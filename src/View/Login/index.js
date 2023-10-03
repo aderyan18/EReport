@@ -66,26 +66,20 @@ export default function Login({navigation}) {
     };
 
     try {
-      const response = await axios.post(
-        `http://brisik.andexcargo.com/api/v1/login`,
-        data,
-      );
-
-      if (response.data.code === 200) {
-        const token = response.data.token;
-        console.log('LOGIN BERHASIL\n', response.data);
-        await AsyncStorage.setItem('token', token);
-        navigation.replace('Home');
-      } else {
-        console.log('LOGIN GAGAL\n', response.data.code);
-        Alert.alert('Login gagal', 'PN atau Password salah');
-      }
+      const response = await axios
+        .post(`${BASE_URL_API}/v1/login`, data)
+        .then(async response => {
+          const token = response.data.token;
+          console.log('LOGIN BERHASIL\n', response.data);
+          await AsyncStorage.setItem('token', token);
+          navigation.replace('Home');
+        });
     } catch (error) {
       console.log('LOGIN GAGAL\n', error);
       Alert.alert('Login gagal', 'Terjadi kesalahan saat login');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

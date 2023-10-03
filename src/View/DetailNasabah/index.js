@@ -31,31 +31,6 @@ export default function DetailNasabah({navigation, route}) {
   const debitur = route?.params?.item;
   const [kunjungan, setKunjungan] = useState('');
 
-  const handleSubmitt = async () => {
-    const data = {
-      debitur_id: debitur.id,
-      kunjungan: kunjungan,
-      tanggal: dateFrom,
-      gambar: image,
-    };
-    await axios
-      .post(`${BASE_URL_API}/v1/aktivitas`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(res => {
-        console.log(res.data);
-        Alert.alert('Berhasil Menambah Aktivitas');
-        navigation.goBack();
-      })
-      .catch(err => {
-        console.log(err);
-        Alert.alert('Gagal Menambah Aktivitas');
-        setLoading(false);
-      });
-  };
-
   const options = {
     title: 'Select Image',
     customButtons: [
