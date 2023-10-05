@@ -210,7 +210,7 @@ export default function Login({navigation}) {
                   borderColor: COLOR.WHITE,
                 }}>
                 <Text style={{fontWeight: 'bold', color: COLOR.WHITE}}>
-                  {loading ? 'LOADING...' : 'MASUK'}
+                  {loading ? 'LOADING...' : 'LOGIN'}
                 </Text>
               </TouchableOpacity>
             </View>

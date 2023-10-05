@@ -141,13 +141,18 @@ export default function Home({navigation}) {
             marginLeft: wp(3),
           }}>
           <Text
-            style={{color: COLOR.BLACK, fontSize: wp(6), fontWeight: 'bold'}}>
-            Activity Report
+            style={{
+              color: COLOR.BLACK,
+              fontSize: wp(5.5),
+              fontWeight: 'bold',
+              fontStyle: 'italic',
+            }}>
+            Laporan Bri-Sik
           </Text>
           <Text
             style={{
               color: COLOR.BLACK,
-              fontSize: wp(4),
+              fontSize: wp(4.5),
             }}>
             Hai, {userInfo.nama}
           </Text>
@@ -156,7 +161,7 @@ export default function Home({navigation}) {
           <Icon
             name="sign-out"
             size={wp(8)}
-            color={COLOR.SECONDARYPRIMARY}
+            color={COLOR.RED}
             style={{right: wp(10)}}
             onPress={() => {
               handleLogout();

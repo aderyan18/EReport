@@ -171,12 +171,17 @@ export default function DetailNasabah({navigation, route}) {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Text style={{fontSize: wp(5), color: COLOR.WHITE}}>
-              Create a new report
+            <Text
+              style={{fontSize: wp(5), color: COLOR.WHITE, fontWeight: 'bold'}}>
+              Laporan Aktivitas
             </Text>
-            <Text style={{color: COLOR.WHITE}}>
-              {' '}
-              {moment(dateFrom).format('L')}
+            <Text
+              style={{
+                color: COLOR.WHITE,
+                fontStyle: 'italic',
+                fontSize: wp(4),
+              }}>
+              Kunjungan ke - {debitur.kunjungan}
             </Text>
           </View>
         </View>
@@ -207,7 +212,7 @@ export default function DetailNasabah({navigation, route}) {
                 color: COLOR.BLACK,
                 fontSize: wp(4),
                 marginLeft: wp(5),
-                marginTop: wp(2),
+                marginTop: wp(1),
               }}>
               <Text style={{fontWeight: 'bold'}}>Alamat :</Text>{' '}
               {debitur.alamat}
@@ -218,7 +223,7 @@ export default function DetailNasabah({navigation, route}) {
                 color: COLOR.BLACK,
                 fontSize: wp(4),
                 marginLeft: wp(5),
-                marginTop: wp(2),
+                marginTop: wp(1),
               }}>
               <Text style={{fontWeight: 'bold'}}>No. Rekening :</Text>{' '}
               {debitur.no_rekening}
