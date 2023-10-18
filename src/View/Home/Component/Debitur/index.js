@@ -24,45 +24,6 @@ export default function Debitur({navigation, searchQuery}) {
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreData, setHasMoreData] = useState(true);
-
-  // const fetchData = async () => {
-  //   if (isLoading) {
-  //     return;
-  //   }
-  //   setIsLoading(true);
-
-  //   try {
-  //     const userToken = await AsyncStorage.getItem('token');
-
-  //     if (userToken) {
-  //       const response = await axios.get(`${BASE_URL_API}/v1/debitur`, {
-  //         headers: {
-  //           Authorization: `Bearer ${userToken}`,
-  //           'Content-Type': 'application/json',
-  //         },
-  //         params: {
-  //           page: currentPage,
-  //         },
-  //       });
-
-  //       const newData = response.data.data;
-
-  //       if (newData.length > 0) {
-  //         setDebitur(prevData => [...prevData, ...newData]);
-  //         setCurrentPage(currentPage + 1);
-  //       } else {
-  //         setHasMoreData(false);
-  //       }
-  //     } else {
-  //       setHasMoreData(false);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching data:', error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   const fetchData = async () => {
     if (!isLoading && hasMoreData) {
       setIsLoading(true);
@@ -100,10 +61,6 @@ export default function Debitur({navigation, searchQuery}) {
     }
   };
 
-  const handleLoadMore = () => {
-    fetchData();
-  };
-
   // Memfilter data debitur berdasarkan searchQuery
   const filteredDebitur = debitur.filter(item =>
     item.nama.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -113,27 +70,29 @@ export default function Debitur({navigation, searchQuery}) {
     fetchData();
   }, [searchQuery]);
 
-  const renderListItem = ({item}) => (
+  const renderListItem = ({item, index}) => (
     <TouchableOpacity
       style={styles.ListNasabah}
       onPress={() => navigation.navigate('DetailNasabah', {item})}>
-      <Image
-        style={styles.Image}
-        source={require('../../../../Assets/book.png')}
-      />
+      <View style={styles.Image}>
+        <Text
+          style={{color: COLOR.WHITE, fontSize: wp(4.5), fontWeight: 'bold'}}>
+          {index + 1}
+        </Text>
+      </View>
       <View style={styles.ListContent}>
         <Text style={styles.Nama}>{item.nama}</Text>
-        <Text style={styles.BlackText} numberOfLines={1}>
+        {/* <Text style={styles.BlackText} numberOfLines={1}>
           <Text style={styles.BoldText}>Alamat:</Text> {item.alamat}
-        </Text>
+        </Text> */}
         <Text style={styles.BlackText}>
-          <Text style={styles.BoldText}>Rekening :</Text> {item.no_rekening}
+          <Text style={styles.BoldText}>Rek :</Text> {item.no_rekening}
         </Text>
       </View>
       <Icon
         name="chevron-right"
         size={wp(7)}
-        color={COLOR.SECONDARYPRIMARY}
+        color={COLOR.PRIMARY}
         style={styles.Icon}
       />
     </TouchableOpacity>
@@ -143,7 +102,7 @@ export default function Debitur({navigation, searchQuery}) {
       {filteredDebitur.length === 0 && !isLoading ? (
         <View style={styles.NoDataContainer}>
           <Image
-            source={require('../../../../Assets/search.png')}
+            source={require('../../../../Assets/debt.png')}
             style={styles.NoDataImage}
           />
           <Text style={styles.NoDataText}>Data Tidak Ditemukan</Text>
@@ -181,53 +140,36 @@ export default function Debitur({navigation, searchQuery}) {
 
 const styles = StyleSheet.create({
   Image: {
-    width: wp(13),
-    height: wp(13),
-    backgroundColor: COLOR.WHITE,
+    width: wp(15),
+    height: wp(15),
+    backgroundColor: COLOR.PRIMARY,
     alignSelf: 'center',
     marginLeft: wp(3),
-  },
-  ContainerImage: {
-    width: wp(100),
-    height: wp(25),
-    backgroundColor: COLOR.WHITE,
-    justifyContent: 'space-between',
+    borderRadius: wp(10),
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLOR.PRIMARY,
-    flexDirection: 'row',
-  },
-  ContainerContent: {
-    width: wp(100),
-    height: wp(180),
-    backgroundColor: COLOR.WHITE,
-    borderWidth: 1,
-    borderColor: COLOR.PRIMARY,
-    marginTop: wp(2),
-    borderTopLeftRadius: wp(5),
-    borderTopRightRadius: wp(5),
-    paddingBottom: wp(5),
+    justifyContent: 'center',
   },
   ListNasabah: {
     backgroundColor: COLOR.WHITE,
-    width: wp(90),
-    height: wp(24),
-    marginTop: wp(4.5),
+    width: wp(95),
+    height: wp(20),
+    marginTop: wp(3),
     alignSelf: 'center',
     borderRadius: wp(5),
     justifyContent: 'flex-start',
-    borderWidth: 1,
+    borderWidth: wp(0.2),
     borderColor: COLOR.PRIMARY,
     flexDirection: 'row',
   },
   ListContent: {
     width: wp(65),
     height: wp(22),
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignSelf: 'center',
+    marginLeft: wp(1.5),
   },
   Nama: {
-    color: COLOR.SECONDARYPRIMARY,
+    color: COLOR.BLACK,
     fontSize: wp(4.5),
   },
   BlackText: {
@@ -238,7 +180,7 @@ const styles = StyleSheet.create({
   },
   Icon: {
     alignSelf: 'center',
-    right: wp(1),
+    right: wp(4.5),
     position: 'absolute',
   },
   NoDataContainer: {
@@ -247,14 +189,13 @@ const styles = StyleSheet.create({
   },
   NoDataImage: {
     alignSelf: 'center',
-    width: wp(30),
-    height: wp(30),
+    width: wp(40),
+    height: wp(40),
   },
   NoDataText: {
     color: COLOR.BLACK,
     fontSize: wp(4.5),
     alignSelf: 'center',
-    marginTop: hp(2),
   },
   FooterText: {
     textAlign: 'center',

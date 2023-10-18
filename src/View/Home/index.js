@@ -115,152 +115,271 @@ export default function Home({navigation}) {
     }, 2000);
   }, []);
 
-  useEffect(() => {
-    getUserInfo();
-    getDebitur();
-  }, [refreshing]);
-  return isLoading ? (
-    <ActivityIndicator
-      size="large"
-      color={COLOR.PRIMARY}
-      style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
-    />
-  ) : (
-    <SafeAreaView>
-      <View style={[styles.ContainerImage]}>
-        <Image
-          style={[styles.Image]}
-          source={require('../../Assets/user.png')}
-        />
+  // function component start
+  function rekdpk(angka, orang, jumlah) {
+    return (
+      <View style={[styles.DPKcontent]}>
+        <View style={[styles.Circle]}>
+          <Text style={{color: COLOR.WHITE, fontSize: wp(6)}}>{angka}</Text>
+        </View>
+        <Text
+          style={{
+            color: COLOR.BLACK,
+            fontSize: wp(4.5),
+            marginLeft: wp(3),
+          }}>
+          {orang} Orang
+        </Text>
+        <View style={[styles.Jumlah]}>
+          <Text
+            style={{
+              color: COLOR.BLACK,
+              fontWeight: 'bold',
+            }}>
+            {jumlah}
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  function rekNPL(icon, nama, jumlah, orang) {
+    return (
+      <View style={[styles.DPKcontent]}>
+        <View style={[styles.Circle]}>
+          <Icon name={icon} size={wp(6)} color={COLOR.WHITE} />
+        </View>
         <View
           style={{
-            width: wp(70),
-            height: wp(30),
-            // backgroundColor: COLOR.GREY,
-            justifyContent: 'center',
-            marginLeft: wp(3),
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            width: wp(30),
+            height: wp(13),
           }}>
           <Text
             style={{
               color: COLOR.BLACK,
-              fontSize: wp(5.5),
-              fontWeight: 'bold',
-              fontStyle: 'italic',
+              fontSize: wp(4),
+              marginLeft: wp(1.5),
             }}>
-            Laporan Bri-Sik
+            {nama}
           </Text>
           <Text
             style={{
               color: COLOR.BLACK,
-              fontSize: wp(4.5),
+              fontSize: wp(3.5),
+              marginLeft: wp(1.5),
+              fontWeight: 'bold',
             }}>
-            Hai, {userInfo.nama}
+            {orang} Orang
           </Text>
         </View>
-        <TouchableOpacity>
-          <Icon
-            name="sign-out"
-            size={wp(8)}
-            color={COLOR.RED}
-            style={{right: wp(10)}}
-            onPress={() => {
-              handleLogout();
-            }}
-          />
-        </TouchableOpacity>
+        <View
+          style={{
+            width: wp(45),
+            height: wp(13),
+            justifyContent: 'center',
+            // borderRadius: wp(5),
+            alignItems: 'flex-end',
+            // marginLeft: wp(3),
+            alignSelf: 'center',
+          }}>
+          <Text
+            style={{
+              color: COLOR.BLACK,
+              fontWeight: 'bold',
+            }}>
+            {jumlah}
+          </Text>
+        </View>
       </View>
-      <View style={[styles.ContainerContent]}>
-        <View>
-          <Text
-            style={{
-              color: COLOR.BLACK,
-              fontSize: wp(5),
-              fontWeight: 'bold',
-              marginLeft: wp(9),
-              marginTop: wp(5),
-            }}>
-            Daftar Nasabah
-          </Text>
-          <Searchbar
-            placeholder="Cari Nasabah ...."
-            onChangeText={onChangeSearch}
-            value={searchQuery}
-            icon={() => (
-              <Icon
-                name="search"
-                size={wp(5)}
-                color={COLOR.PRIMARY}
-                style={{alignSelf: 'center'}}
-              />
-            )}
-            clearIcon={() => (
-              <Icon
-                name="times"
-                size={wp(5)}
-                color={COLOR.PRIMARY}
-                style={{alignSelf: 'center'}}
-              />
-            )}
-            rippleColor={COLOR.PRIMARY}
-            style={{
-              color: COLOR.PRIMARY,
-              width: wp(90),
-              alignSelf: 'center',
-              backgroundColor: COLOR.WHITE,
-              borderColor: COLOR.PRIMARY,
-              borderWidth: 1,
-              height: wp(14),
-            }}
-          />
-        </View>
+    );
+  }
 
-        <Debitur navigation={navigation} searchQuery={searchQuery} />
-        {/* </ScrollView> */}
-        <View style={{marginTop: wp(5)}}></View>
-      </View>
-    </SafeAreaView>
+  // function component end
+
+  useEffect(() => {
+    getUserInfo();
+    getDebitur();
+  }, [refreshing]);
+  return (
+    <View style={{flex: 1}}>
+      <View style={{height: wp(10)}}></View>
+      <TouchableOpacity style={[styles.Profile]}>
+        <Image
+          source={require('../../Assets/user.png')}
+          style={{width: wp(18), height: wp(18)}}
+        />
+        <View style={{flex: 1, flexDirection: 'column', marginLeft: wp(3)}}>
+          <Text
+            style={{
+              color: COLOR.WHITE,
+              fontSize: wp(4.5),
+              fontWeight: 'bold',
+            }}>
+            {userInfo.pn}
+          </Text>
+          <Text
+            style={{color: COLOR.WHITE, fontSize: wp(4), fontWeight: 'bold'}}>
+            {userInfo.nama}
+          </Text>
+        </View>
+        <Image
+          source={require('../../Assets/transparan.png')}
+          style={styles.Image}
+        />
+      </TouchableOpacity>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            refreshingContentColor={COLOR.PRIMARY}
+          />
+        }>
+        <View
+          style={{
+            // atur scroll nya disini
+            width: wp(100),
+            alignItems: 'center',
+            height: wp(180),
+            // backgroundColor: COLOR.PRIMARY,
+          }}>
+          <View
+            style={{
+              width: wp(95),
+              height: wp(20),
+              // backgroundColor: COLOR.BLUE,
+              marginTop: wp(2),
+            }}>
+            <Text
+              style={{
+                color: COLOR.BLACK,
+                fontSize: wp(4.5),
+                fontWeight: 'bold',
+              }}>
+              {' '}
+              REKAP DPK
+            </Text>
+            {/* dpk start */}
+
+            {/* TES FUNCTION START */}
+            {rekdpk(1, '20', 'Rp. 100.000.00')}
+            {rekdpk(2, '40', 'Rp. 1.100.000.00')}
+            {rekdpk(3, '60', 'Rp. 5.500.000.00')}
+            {/* TES FUNCTION END */}
+
+            {/* dpk end */}
+
+            {/* NPL START */}
+            <View
+              style={{
+                marginTop: wp(2),
+                width: wp(95),
+                height: wp(20),
+                // backgroundColor: COLOR.PRIMARY,
+              }}>
+              <Text
+                style={{
+                  color: COLOR.BLACK,
+                  fontSize: wp(4.5),
+                  fontWeight: 'bold',
+                }}
+                numberOfLines={1}>
+                {' '}
+                {''}
+                REKAP NPL
+              </Text>
+              <View
+                style={{
+                  width: wp(95),
+                  height: wp(70),
+                  // backgroundColor: COLOR.PRIMARY,
+                }}>
+                {rekNPL('hand-o-up', 'Kurang Lancar', 'Rp. 100.000.00', '20')}
+                {rekNPL('minus', 'Diragukan', 'Rp. 1.100.000.00', '50')}
+                {rekNPL('bitbucket', 'Macet', 'Rp. 5.500.000.00', '90')}
+              </View>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('DaftarNasabah')}
+                style={{
+                  // marginTop: wp(2),
+                  width: wp(95),
+                  height: wp(12),
+                  backgroundColor: COLOR.SECONDARYPRIMARY,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: wp(2),
+                  // alignSelf: 'center',
+                  flexDirection: 'row',
+                }}>
+                <Icon name="search" size={wp(5)} color={COLOR.WHITE} />
+                <Text
+                  style={{
+                    color: COLOR.WHITE,
+                    fontSize: wp(4),
+                    fontWeight: 'bold',
+                    marginLeft: wp(2),
+                  }}>
+                  Lihat Semua Nasabah
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {/* NPL END */}
+          </View>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // new
   Image: {
-    width: wp(18),
-    height: wp(18),
-    backgroundColor: COLOR.WHITE,
+    width: wp(15),
+    height: wp(13),
+    // backgroundColor: COLOR.WHITE,
     alignSelf: 'center',
-    marginLeft: wp(5),
+    // marginLeft: wp(5),
   },
-  ContainerImage: {
-    width: wp(100),
-    height: wp(25),
+  DPKcontent: {
+    width: wp(95),
+    height: wp(20),
     backgroundColor: COLOR.WHITE,
-    justifyContent: 'space-between',
+    flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: COLOR.PRIMARY,
-    flexDirection: 'row',
-  },
-  ContainerContent: {
-    width: wp(100),
-    height: wp(180),
-    backgroundColor: COLOR.WHITE,
-    borderWidth: 1,
-    borderColor: COLOR.PRIMARY,
-    marginTop: wp(2),
-    borderTopLeftRadius: wp(5),
-    borderTopRightRadius: wp(5),
-    paddingBottom: wp(5),
-  },
-  ListNasabah: {
-    backgroundColor: COLOR.WHITE,
-    width: wp(90),
-    height: wp(25),
-    marginTop: wp(3),
-    alignSelf: 'center',
     borderRadius: wp(5),
-    justifyContent: 'flex-start',
-    borderWidth: 1,
-    borderColor: COLOR.PRIMARY,
+    marginTop: wp(1),
+  },
+  Circle: {
+    width: wp(15),
+    height: wp(13),
+    backgroundColor: COLOR.PRIMARY,
+    justifyContent: 'center',
+    borderRadius: wp(5),
+    alignItems: 'center',
+    marginLeft: wp(3),
+  },
+  Jumlah: {
+    width: wp(50),
+    height: wp(13),
+    // backgroundColor: COLOR.PRIMARY,
+    justifyContent: 'center',
+    // borderRadius: wp(5),
+    alignItems: 'flex-end',
+    marginLeft: wp(3),
+    alignSelf: 'center',
+  },
+  Profile: {
+    width: wp(100),
+    height: wp(25),
+    backgroundColor: COLOR.PRIMARY,
+    justifyContent: 'space-evenly',
+    elevation: 10,
     flexDirection: 'row',
+    alignItems: 'center',
+    padding: wp(3),
   },
 });

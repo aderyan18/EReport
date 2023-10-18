@@ -26,7 +26,7 @@ class SplashScreen extends Component {
       <View style={[styles.container]}>
         <Image
           style={[styles.tinyLogo]}
-          source={require('../../Assets/report.png')}
+          source={require('../../Assets/brisik.png')}
         />
         <Text
           style={{
@@ -36,7 +36,7 @@ class SplashScreen extends Component {
             color: COLOR.BLACK,
             marginTop: hp(2),
           }}>
-          E - Report
+          BRI-Sik
         </Text>
         <Text
           style={{
@@ -44,7 +44,7 @@ class SplashScreen extends Component {
             textAlign: 'center',
             color: COLOR.BLACK,
           }}>
-          Report Application
+          App
         </Text>
         <Text style={[styles.footer]}>Powered by Dcc</Text>
       </View>
@@ -62,9 +62,10 @@ const styles = StyleSheet.create({
   },
   tinyLogo: {
     backgroundColor: '#fff',
-    height: hp(20),
-    width: wp(40),
+    height: hp(15),
+    width: wp(35),
     alignSelf: 'center',
+    borderRadius: wp(5),
   },
   footer: {
     position: 'absolute',

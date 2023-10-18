@@ -5,6 +5,7 @@ import {
   View,
   Image,
   Alert,
+  ImageBackground,
 } from 'react-native';
 import React, {useState} from 'react';
 import {COLOR} from '../../Styles/color';
@@ -23,11 +24,12 @@ import moment from 'moment/moment';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import axios from 'axios';
 import {BASE_URL_API} from '../../../env';
+import LinearGradient from 'react-native-linear-gradient';
 
 export default function DetailNasabah({navigation, route}) {
   const [loading, setLoading] = useState(false);
   const [dateFrom, setDateFrom] = useState(new Date());
-  const keterangan = ['Belum bayar', 'Lunas'];
+  const keterangan = ['Sudah Bayar', 'Restruct', 'Janji Bayar'];
   const debitur = route?.params?.item;
   const [kunjungan, setKunjungan] = useState('');
 
@@ -134,6 +136,14 @@ export default function DetailNasabah({navigation, route}) {
     );
   };
 
+  // keterangan janji bayar
+  const [selectedKeterangan, setSelectedKeterangan] = useState(''); // Menyimpan keterangan yang dipilih
+
+  // Fungsi yang dipanggil saat keterangan dipilih
+  const handleKeteranganSelect = selectedItem => {
+    setSelectedKeterangan(selectedItem);
+  };
+
   // date time picker
   const [datePickerVisible, setDatePickerVisible] = useState(false);
 
@@ -152,109 +162,79 @@ export default function DetailNasabah({navigation, route}) {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: COLOR.WHITE}}>
-      <ScrollView>
+    <View style={{flex: 1, backgroundColor: COLOR.WHITE}}>
+      <View style={[styles.Header]}>
         <View
           style={{
-            backgroundColor: COLOR.BLUE,
-            width: wp(100),
+            width: wp(70),
             height: wp(20),
-            flexDirection: 'row',
-            justifyContent: 'space-around',
+            // backgroundColor: COLOR.GREY,
+            justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <View
-            style={{
-              width: wp(70),
-              height: wp(20),
-              // backgroundColor: COLOR.GREY,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{fontSize: wp(5), color: COLOR.WHITE, fontWeight: 'bold'}}>
-              Laporan Aktivitas
-            </Text>
-            <Text
-              style={{
-                color: COLOR.WHITE,
-                fontStyle: 'italic',
-                fontSize: wp(4),
-              }}>
-              Kunjungan ke - {debitur.kunjungan}
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            backgroundColor: COLOR.WHITE,
-            width: wp(90),
-            height: wp(30),
-            alignSelf: 'center',
-            marginTop: wp(5),
-            borderRadius: wp(5),
-            borderWidth: 1,
-            borderColor: COLOR.PRIMARY,
-            justifyContent: 'center',
-          }}>
-          <View>
-            <Text
-              style={{
-                color: COLOR.BLACK,
-                fontSize: wp(4),
-                marginLeft: wp(5),
-              }}>
-              <Text style={{fontWeight: 'bold'}}>Nama Nasabah :</Text>{' '}
-              {debitur.nama}
-            </Text>
-            <Text
-              style={{
-                color: COLOR.BLACK,
-                fontSize: wp(4),
-                marginLeft: wp(5),
-                marginTop: wp(1),
-              }}>
-              <Text style={{fontWeight: 'bold'}}>Alamat :</Text>{' '}
-              {debitur.alamat}
-            </Text>
-
-            <Text
-              style={{
-                color: COLOR.BLACK,
-                fontSize: wp(4),
-                marginLeft: wp(5),
-                marginTop: wp(1),
-              }}>
-              <Text style={{fontWeight: 'bold'}}>No. Rekening :</Text>{' '}
-              {debitur.no_rekening}
-            </Text>
-          </View>
-        </View>
-        {/* <View style={{marginTop: wp(5)}}>
+          <Text
+            style={{fontSize: wp(5), color: COLOR.WHITE, fontWeight: 'bold'}}>
+            Laporan
+          </Text>
           <Text
             style={{
-              color: COLOR.BLACK,
+              color: COLOR.WHITE,
+              fontStyle: 'italic',
               fontSize: wp(4),
-              marginLeft: wp(5),
             }}>
-            Kunjungan ke :
+            Kunjungan ke - {debitur.kunjungan}
           </Text>
-          <TextInput
-            value={setKunjungan}
-            mode="flat"
-            theme={{colors: {primary: COLOR.BLUE}}}
-            keyboardType="number-pad"
-            style={{
-              height: wp(10),
-              width: wp(90),
-              borderRadius: wp(2),
-              fontSize: wp(5),
-              borderColor: COLOR.PRIMARY,
-              backgroundColor: COLOR.WHITE,
-              alignSelf: 'center',
-            }}
-          />
-        </View> */}
+        </View>
+      </View>
+      <ScrollView>
+        <LinearGradient
+          start={{x: 1.0, y: 1.5}}
+          end={{x: 1.5, y: 0.6}}
+          locations={[0, 0.5, 0.6]}
+          colors={[COLOR.PRIMARY, COLOR.WHITE, COLOR.SECONDARYPRIMARY]}
+          style={[styles.LinearGradient]}>
+          <View>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Icon name="credit-card" size={wp(12)} color={COLOR.WHITE} />
+              {/*           
+              <Image
+                source={require('../../Assets/brisik.png')}
+                style={{width: wp(10), height: wp(10), borderRadius: wp(1)}}
+              /> */}
+              <Text
+                style={[styles.TextBlack, {marginLeft: wp(2)}]}
+                numberOfLines={1}>
+                {debitur.nama}
+              </Text>
+            </View>
+            <View
+              style={{
+                alignItems: 'flex-start',
+                width: wp(70),
+                height: wp(13),
+                marginLeft: wp(2),
+              }}>
+              <Text style={{fontSize: wp(3.5), color: COLOR.WHITE}}>
+                No.Rek :
+              </Text>
+              <Text style={[styles.TextBlack]}>{debitur.no_rekening}</Text>
+            </View>
+            <View
+              style={{
+                alignItems: 'flex-start',
+                width: wp(80),
+                height: wp(17.5),
+                marginLeft: wp(2),
+              }}>
+              <Text style={{fontSize: wp(3.5), color: COLOR.WHITE}}>
+                Alamat :
+              </Text>
+              <Text style={[styles.TextBlack]} numberOfLines={2}>
+                {debitur.alamat}
+              </Text>
+            </View>
+          </View>
+        </LinearGradient>
         {/* DATE FROM */}
         <Text
           style={{
@@ -268,15 +248,7 @@ export default function DetailNasabah({navigation, route}) {
         </Text>
         <TouchableOpacity
           onPress={() => showDatePicker()}
-          style={{
-            backgroundColor: COLOR.SECONDARYPRIMARY,
-            height: wp(14),
-            borderRadius: wp(2),
-            justifyContent: 'center',
-            width: wp(90),
-            alignSelf: 'center',
-            paddingLeft: wp(5),
-          }}>
+          style={[styles.BtnDate]}>
           <Text
             style={{
               fontSize: wp(5),
@@ -292,21 +264,63 @@ export default function DetailNasabah({navigation, route}) {
           onCancel={hideDatePicker}
         />
         {/* DATE FROM */}
-        <TouchableOpacity
-          onPress={() => takePicture()}
+
+        {/* KETERANGAN START */}
+        <Text
           style={{
-            height: wp(14),
-            backgroundColor: '#fff',
-            elevation: 5,
-            top: wp(7),
-            paddingHorizontal: wp(5),
-            borderRadius: wp(2),
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
+            fontSize: wp(4),
+            color: COLOR.BLACK,
+            marginLeft: wp(5),
+            marginTop: wp(2),
+          }}>
+          keterangan :
+        </Text>
+        <SelectDropdown
+          data={keterangan}
+          itemTextStyle={{color: COLOR.BLACK}}
+          itemTextExtractor={item => item}
+          buttonStyle={[styles.BtnKet]}
+          rowTextStyle={{color: COLOR.PRIMARY}}
+          buttonTextStyle={{color: COLOR.WHITE}}
+          defaultButtonText="Pilih Keterangan"
+          dropdownStyle={{
             width: wp(90),
             alignSelf: 'center',
-          }}>
+            backgroundColor: COLOR.WHITE,
+            borderRadius: wp(2),
+            justifyContent: 'center',
+          }}
+          onSelect={selectedItem => handleKeteranganSelect(selectedItem)}
+        />
+        {/* KETERANGAN END */}
+
+        {/* Janji Bayar true start */}
+        {/* Tampilkan tanggal jika "Janji Bayar" dipilih */}
+        {selectedKeterangan === 'Janji Bayar' && (
+          <View style={{marginTop: wp(2)}}>
+            <Text
+              style={{fontSize: wp(4), color: COLOR.BLACK, marginLeft: wp(5)}}>
+              Tanggal Janji Bayar :
+            </Text>
+            <TouchableOpacity
+              onPress={() => showDatePicker()}
+              style={[styles.BtnDate, {marginTop: wp(2)}]}>
+              <Text style={{fontSize: wp(5), color: '#fff'}}>
+                {moment(dateFrom).format('L')}
+              </Text>
+            </TouchableOpacity>
+            <DateTimePickerModal
+              isVisible={datePickerVisible}
+              mode="date"
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
+            />
+          </View>
+        )}
+        {/* Janji Bayar true end*/}
+        <TouchableOpacity
+          onPress={() => takePicture()}
+          style={[styles.BtnPicture]}>
           <Text style={{fontSize: wp(5), color: COLOR.BLACK}}>
             Ambil Gambar
           </Text>
@@ -317,18 +331,7 @@ export default function DetailNasabah({navigation, route}) {
             style={{height: wp(7), width: wp(7)}}
           />
         </TouchableOpacity>
-
-        <View
-          style={{
-            width: wp(90),
-            height: wp(70),
-            backgroundColor: COLOR.WHITE,
-            borderColor: COLOR.SECONDARYPRIMARY,
-            borderWidth: wp(0.2),
-            marginTop: wp(9),
-            alignSelf: 'center',
-            borderRadius: wp(2),
-          }}>
+        <View style={[styles.ImageCon]}>
           <View
             style={{
               justifyContent: 'center',
@@ -396,8 +399,76 @@ export default function DetailNasabah({navigation, route}) {
           </Button>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  Header: {
+    backgroundColor: COLOR.PRIMARY,
+    width: wp(100),
+    height: wp(26),
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'flex-end',
+    borderBottomLeftRadius: wp(5),
+    borderBottomRightRadius: wp(5),
+  },
+  LinearGradient: {
+    backgroundColor: COLOR.WHITE,
+    width: wp(90),
+    height: wp(45),
+    alignSelf: 'center',
+    marginTop: wp(3),
+    // justifyContent: 'center',
+    alignItems: 'flex-start',
+    paddingHorizontal: wp(3),
+    paddingTop: wp(2),
+    borderRadius: wp(2),
+  },
+  TextBlack: {
+    color: COLOR.GREY,
+    fontSize: wp(4),
+    marginTop: wp(1),
+    fontWeight: 'bold',
+  },
+  BtnDate: {
+    backgroundColor: COLOR.PRIMARY,
+    height: wp(14),
+    borderRadius: wp(2),
+    justifyContent: 'center',
+    width: wp(90),
+    alignSelf: 'center',
+    paddingLeft: wp(5),
+  },
+  BtnKet: {
+    width: wp(90),
+    alignSelf: 'center',
+    backgroundColor: COLOR.PRIMARY,
+    borderRadius: wp(2),
+    marginTop: wp(2),
+  },
+  BtnPicture: {
+    height: wp(14),
+    backgroundColor: '#fff',
+    elevation: 5,
+    top: wp(7),
+    paddingHorizontal: wp(5),
+    borderRadius: wp(2),
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: wp(90),
+    alignSelf: 'center',
+  },
+  ImageCon: {
+    width: wp(90),
+    height: wp(70),
+    backgroundColor: COLOR.WHITE,
+    borderColor: COLOR.PRIMARY,
+    borderWidth: wp(0.2),
+    marginTop: wp(9),
+    alignSelf: 'center',
+    borderRadius: wp(2),
+  },
+});
