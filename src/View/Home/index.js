@@ -286,14 +286,13 @@ export default function Home({navigation}) {
                   fontWeight: 'bold',
                 }}
                 numberOfLines={1}>
-                {' '}
                 {''}
                 REKAP NPL
               </Text>
               <View
                 style={{
                   width: wp(95),
-                  height: wp(70),
+                  height: wp(65),
                   // backgroundColor: COLOR.PRIMARY,
                 }}>
                 {rekNPL('hand-o-up', 'Kurang Lancar', 'Rp. 100.000.00', '20')}
@@ -322,6 +321,30 @@ export default function Home({navigation}) {
                     marginLeft: wp(2),
                   }}>
                   Lihat Semua Nasabah
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleLogout()}
+                style={{
+                  marginTop: wp(2),
+                  width: wp(95),
+                  height: wp(12),
+                  backgroundColor: COLOR.RED,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: wp(2),
+                  // alignSelf: 'center',
+                  flexDirection: 'row',
+                }}>
+                <Icon name="sign-out" size={wp(5)} color={COLOR.WHITE} />
+                <Text
+                  style={{
+                    color: COLOR.WHITE,
+                    fontSize: wp(4),
+                    fontWeight: 'bold',
+                    marginLeft: wp(2),
+                  }}>
+                  Keluar
                 </Text>
               </TouchableOpacity>
             </View>

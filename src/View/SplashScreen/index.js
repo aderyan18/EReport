@@ -46,7 +46,9 @@ class SplashScreen extends Component {
           }}>
           App
         </Text>
-        <Text style={[styles.footer]}>Powered by Dcc</Text>
+        <Text style={[styles.footer]}>
+          Powered by <Text style={{color: COLOR.PRIMARY}}>DCC</Text>
+        </Text>
       </View>
     );
   }
@@ -62,8 +64,8 @@ const styles = StyleSheet.create({
   },
   tinyLogo: {
     backgroundColor: '#fff',
-    height: hp(15),
-    width: wp(35),
+    height: hp(13),
+    width: wp(30),
     alignSelf: 'center',
     borderRadius: wp(5),
   },
@@ -73,6 +75,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: wp(3.5),
     color: COLOR.BLACK,
+    fontWeight: 'bold',
   },
 });
 

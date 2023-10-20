@@ -101,7 +101,7 @@ export default function Login({navigation}) {
             <View style={[styles.ContainerImage]}>
               <Image
                 style={[styles.Image]}
-                source={require('../../Assets/business-report.png')}
+                source={require('../../Assets/brisik.png')}
               />
             </View>
             {/* Image End */}
@@ -156,7 +156,7 @@ export default function Login({navigation}) {
                   underlineColor="transparent"
                   keyboardType={'number-pad'}
                   onChangeText={text => setPn(text)}
-                  theme={{colors: {primary: COLOR.GREY}}}
+                  theme={{colors: {primary: COLOR.PRIMARY}}}
                   style={[styles.TxtPN]}
                   left={
                     <TextInput.Icon name="account" color={COLOR.BLUE} />
@@ -164,31 +164,28 @@ export default function Login({navigation}) {
                 <TextInput
                   placeholder="Password"
                   underlineColor="transparent"
+                  keyboardType={'visible-password'}
                   secureTextEntry={icon.status}
                   onChangeText={text => setPassword(text)}
                   value={password}
-                  theme={{colors: {primary: COLOR.GREY}}}
+                  theme={{colors: {primary: COLOR.PRIMARY}}}
                   style={[styles.TxtPass]}
                   left={
                     <TextInput.Icon name="lock" color={COLOR.BLUE} />
                   }></TextInput>
                 <TouchableOpacity style={[styles.showEye]} onPress={showPass}>
-                  <Icon
-                    name={icon.icon}
-                    color={COLOR.SECONDARYPRIMARY}
-                    size={wp(10)}
-                  />
+                  <Icon name={icon.icon} color={COLOR.PRIMARY} size={wp(10)} />
                 </TouchableOpacity>
 
                 <Icon
                   name="user"
-                  color={COLOR.SECONDARYPRIMARY}
+                  color={COLOR.PRIMARY}
                   size={wp(10)}
                   style={{position: 'absolute', left: wp(5), top: wp(3)}}
                 />
                 <Icon
                   name="lock"
-                  color={COLOR.SECONDARYPRIMARY}
+                  color={COLOR.PRIMARY}
                   size={wp(10)}
                   style={{position: 'absolute', left: wp(5), top: wp(21)}}
                 />
@@ -225,7 +222,7 @@ const styles = StyleSheet.create({
   Image: {
     justifyContent: 'center',
     width: wp(30),
-    height: hp(15),
+    height: hp(13),
     alignSelf: 'center',
   },
   ContainerImage: {
