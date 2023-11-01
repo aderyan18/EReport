@@ -28,7 +28,9 @@ import LinearGradient from 'react-native-linear-gradient';
 
 export default function DetailNasabah({navigation, route}) {
   const [loading, setLoading] = useState(false);
-  const [dateFrom, setDateFrom] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [tanggalKunjungan, setTanggalKunjungan] = useState(new Date());
+  const [tanggalJanjiBayar, setTanggalJanjiBayar] = useState(new Date());
   const keterangan = ['Sudah Bayar', 'Restruct', 'Janji Bayar'];
   const debitur = route?.params?.item;
   const [kunjungan, setKunjungan] = useState('');
@@ -55,8 +57,27 @@ export default function DetailNasabah({navigation, route}) {
           setLoading(true);
           const data = new FormData();
           data.append('debitur_id', debitur.id);
-          data.append('tanggal', moment(dateFrom).format('YYYY-MM-DD'));
-          data.append('kunjungan', '1');
+          // Menggunakan tanggalKunjungan atau tanggalJanjiBayar sesuai dengan keterangan
+          if (selectedKeterangan === 'Janji Bayar') {
+            data.append(
+              'tanggal',
+              moment(tanggalJanjiBayar).format('YYYY-MM-DD'),
+            );
+          } else {
+            data.append(
+              'tanggal',
+              moment(tanggalKunjungan).format('YYYY-MM-DD'),
+            );
+          }
+          data.append('kunjungan', kunjungan);
+          data.append('ket', selectedKeterangan);
+
+          if (selectedKeterangan === 'Janji Bayar') {
+            data.append(
+              'janji_bayar',
+              moment(tanggalJanjiBayar).format('YYYY-MM-DD'),
+            );
+          }
           data.append('gambar', {
             uri: response.uri,
             type: response.type,
@@ -145,22 +166,40 @@ export default function DetailNasabah({navigation, route}) {
   };
 
   // date time picker
+  // Tambah state untuk mengontrol visibility date picker kunjungan dan janji bayar
+  const [datePickerVisibleKunjungan, setDatePickerVisibleKunjungan] =
+    useState(false);
+  const [datePickerVisibleJanjiBayar, setDatePickerVisibleJanjiBayar] =
+    useState(false);
+
   const [datePickerVisible, setDatePickerVisible] = useState(false);
-
-  const showDatePicker = () => {
-    setDatePickerVisible(true);
+  // Perbarui fungsi showDatePicker untuk menampilkan date picker yang sesuai
+  // Perbarui fungsi showDatePicker untuk menampilkan date picker yang sesuai
+  const showDatePicker = type => {
+    // Set the selectedDate based on the type
+    if (type === 'kunjungan') {
+      setSelectedDate(tanggalKunjungan);
+      setDatePickerVisibleKunjungan(true); // Tampilkan date picker kunjungan
+      setDatePickerVisibleJanjiBayar(false); // Sembunyikan date picker janji bayar
+    } else if (type === 'janjiBayar') {
+      setSelectedDate(tanggalJanjiBayar);
+      setDatePickerVisibleKunjungan(false); // Sembunyikan date picker kunjungan
+      setDatePickerVisibleJanjiBayar(true); // Tampilkan date picker janji bayar
+    }
   };
-
   const hideDatePicker = () => {
-    setDatePickerVisible(false);
+    setDatePickerVisibleKunjungan(false);
+    setDatePickerVisibleJanjiBayar(false);
   };
 
   const handleConfirm = date => {
-    console.warn('A date has been picked: ', date);
-    setDateFrom(new Date(date));
+    if (selectedKeterangan === 'Janji Bayar') {
+      setTanggalJanjiBayar(new Date(date)); // Update tanggal janji bayar
+    } else {
+      setTanggalKunjungan(new Date(date)); // Update tanggal kunjungan
+    }
     hideDatePicker();
   };
-
   return (
     <View style={{flex: 1, backgroundColor: COLOR.WHITE}}>
       <View style={[styles.Header]}>
@@ -247,18 +286,18 @@ export default function DetailNasabah({navigation, route}) {
           Tanggal Kunjungan :
         </Text>
         <TouchableOpacity
-          onPress={() => showDatePicker()}
+          onPress={() => showDatePicker('kunjungan')} // Tampilkan date picker kunjungan
           style={[styles.BtnDate]}>
           <Text
             style={{
               fontSize: wp(5),
               color: '#fff',
             }}>
-            {moment(dateFrom).format('L')}
+            {moment(tanggalKunjungan).format('L')}
           </Text>
         </TouchableOpacity>
         <DateTimePickerModal
-          isVisible={datePickerVisible}
+          isVisible={datePickerVisibleKunjungan}
           mode="date"
           onConfirm={handleConfirm}
           onCancel={hideDatePicker}
@@ -303,14 +342,14 @@ export default function DetailNasabah({navigation, route}) {
               Tanggal Janji Bayar :
             </Text>
             <TouchableOpacity
-              onPress={() => showDatePicker()}
+              onPress={() => showDatePicker('janjiBayar')}
               style={[styles.BtnDate, {marginTop: wp(2)}]}>
               <Text style={{fontSize: wp(5), color: '#fff'}}>
-                {moment(dateFrom).format('L')}
+                {moment(tanggalJanjiBayar).format('L')}
               </Text>
             </TouchableOpacity>
             <DateTimePickerModal
-              isVisible={datePickerVisible}
+              isVisible={datePickerVisibleJanjiBayar}
               mode="date"
               onConfirm={handleConfirm}
               onCancel={hideDatePicker}
