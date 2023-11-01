@@ -28,9 +28,10 @@ export default function Home({navigation}) {
   const onChangeSearch = query => setSearchQuery(query);
   const [userInfo, setUserInfo] = useState({});
   let [isLoading, setIsLoading] = useState(true);
+  const [dpk, setDpk] = useState([]);
+  const [npl, setNpl] = useState({});
   const [isUserLoaded, setIsUserLoaded] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [debitur, setDebitur] = useState([]);
 
   const getUserInfo = async () => {
     await AsyncStorage.getItem('token', async (err, token) => {
@@ -56,27 +57,62 @@ export default function Home({navigation}) {
     });
   };
 
-  const getDebitur = async () => {
-    await AsyncStorage.getItem('token', async (err, token) => {
+  const getDpk = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
       if (token) {
-        // console.log(token);
-        await axios
-          .get(`${BASE_URL_API}/v1/debitur`, {
+        const response = await axios.get(
+          `${BASE_URL_API}/v1/debitur/count-all`,
+          {
             headers: {
-              Authorization: `Bearer ` + token,
+              Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
-          })
-          .then(async res => {
-            setDebitur(res.data.data);
-            console.log('DEBITUR\n', res.data);
-            setIsUserLoaded(true);
-          })
-          .catch(err => {
-            console.log(err.response.data.code);
-          });
+          },
+        );
+        console.log('DPK:', response.data.data);
+        setDpk(response.data?.data.dpk);
+        setIsUserLoaded(true);
+        setIsLoading(false);
+      } else {
+        console.log('Token tidak ditemukan.');
       }
-    });
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error);
+      if (error.response) {
+        console.error('Status Code:', error.response.status);
+        console.error('Data:', error.response.data);
+      }
+    }
+  };
+
+  const getNpl = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const response = await axios.get(
+          `${BASE_URL_API}/v1/debitur/count-all`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+        console.log('NPL:', response.data.data);
+        setNpl(response.data?.data.npl);
+        setIsUserLoaded(true);
+        setIsLoading(false);
+      } else {
+        console.log('Token tidak ditemukan.');
+      }
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error);
+      if (error.response) {
+        console.error('Status Code:', error.response.status);
+        console.error('Data:', error.response.data);
+      }
+    }
   };
 
   const handleLogout = () => {
@@ -122,14 +158,25 @@ export default function Home({navigation}) {
         <View style={[styles.Circle]}>
           <Text style={{color: COLOR.WHITE, fontSize: wp(6)}}>{angka}</Text>
         </View>
-        <Text
+        <View
           style={{
-            color: COLOR.BLACK,
-            fontSize: wp(4.5),
-            marginLeft: wp(3),
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            // backgroundColor: COLOR.RED,
+            width: wp(27),
+            height: wp(13),
+            justifyContent: 'center',
           }}>
-          {orang} Orang
-        </Text>
+          <Text
+            style={{
+              color: COLOR.BLACK,
+              fontSize: wp(4.5),
+              marginLeft: wp(3),
+            }}
+            numberOfLines={1}>
+            {orang} Orang
+          </Text>
+        </View>
         <View style={[styles.Jumlah]}>
           <Text
             style={{
@@ -200,7 +247,10 @@ export default function Home({navigation}) {
 
   useEffect(() => {
     getUserInfo();
-    getDebitur();
+    getDpk();
+    getNpl();
+    // console.log('DPK MAP:', dpk.dpk[1]);
+    // console.log('NPL MAP:', npl.npl['Kurang Lancar']);
   }, [refreshing]);
   return (
     <View style={{flex: 1}}>
@@ -264,9 +314,9 @@ export default function Home({navigation}) {
             {/* dpk start */}
 
             {/* TES FUNCTION START */}
-            {rekdpk(1, '20', 'Rp. 100.000.00')}
-            {rekdpk(2, '40', 'Rp. 1.100.000.00')}
-            {rekdpk(3, '60', 'Rp. 5.500.000.00')}
+            {rekdpk(1, dpk[1], 'Rp. 100.000.00')}
+            {rekdpk(2, dpk[2], 'Rp. 1.100.000.00')}
+            {rekdpk(3, dpk[3], 'Rp. 5.500.000.00')}
             {/* TES FUNCTION END */}
 
             {/* dpk end */}
@@ -286,7 +336,7 @@ export default function Home({navigation}) {
                   fontWeight: 'bold',
                 }}
                 numberOfLines={1}>
-                {''}
+                {' '}
                 REKAP NPL
               </Text>
               <View
@@ -295,9 +345,19 @@ export default function Home({navigation}) {
                   height: wp(65),
                   // backgroundColor: COLOR.PRIMARY,
                 }}>
-                {rekNPL('hand-o-up', 'Kurang Lancar', 'Rp. 100.000.00', '20')}
-                {rekNPL('minus', 'Diragukan', 'Rp. 1.100.000.00', '50')}
-                {rekNPL('bitbucket', 'Macet', 'Rp. 5.500.000.00', '90')}
+                {rekNPL(
+                  'hand-o-up',
+                  'Kurang Lancar',
+                  'Rp. 100.000.00',
+                  npl['Kurang Lancar'],
+                )}
+                {rekNPL(
+                  'minus',
+                  'Diragukan',
+                  'Rp. 1.100.000.00',
+                  npl['Diragukan'],
+                )}
+                {rekNPL('bitbucket', 'Macet', 'Rp. 5.500.000.00', npl['Macet'])}
               </View>
               <TouchableOpacity
                 onPress={() => navigation.navigate('DaftarNasabah')}
@@ -392,8 +452,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // borderRadius: wp(5),
     alignItems: 'flex-end',
-    marginLeft: wp(3),
     alignSelf: 'center',
+    paddingRight: wp(3),
   },
   Profile: {
     width: wp(100),
