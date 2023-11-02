@@ -48,66 +48,58 @@ export default function DetailNasabah({navigation, route}) {
       path: 'images',
     },
   };
+
   const handleSubmit = async response => {
-    if (image.length === 0) {
+    if (!image.uri) {
       Alert.alert('Silahkan ambil gambar!');
     } else {
-      await AsyncStorage.getItem('token', async (err, token) => {
-        if (token) {
-          setLoading(true);
-          const data = new FormData();
-          data.append('debitur_id', debitur.id);
-          // Menggunakan tanggalKunjungan atau tanggalJanjiBayar sesuai dengan keterangan
-          if (selectedKeterangan === 'Janji Bayar') {
-            data.append(
-              'tanggal',
-              moment(tanggalJanjiBayar).format('YYYY-MM-DD'),
-            );
-          } else {
-            data.append(
-              'tanggal',
-              moment(tanggalKunjungan).format('YYYY-MM-DD'),
-            );
-          }
-          data.append('kunjungan', kunjungan);
-          data.append('ket', selectedKeterangan);
+      const token = await AsyncStorage.getItem('token');
 
-          if (selectedKeterangan === 'Janji Bayar') {
-            data.append(
-              'janji_bayar',
-              moment(tanggalJanjiBayar).format('YYYY-MM-DD'),
-            );
-          }
-          data.append('gambar', {
-            uri: response.uri,
-            type: response.type,
-            name: response.fileName,
-          });
-          console.log(data);
-          const config = {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'multipart/form-data',
-              Authorization: 'Bearer ' + token,
+      if (token) {
+        setLoading(true);
+        const data = new FormData();
+        data.append('debitur_id', debitur.id);
+        data.append('kunjungan', kunjungan);
+        data.append('tanggal', moment(tanggalKunjungan).format('YYYY-MM-DD'));
+        data.append('gambar', {
+          uri: response.uri,
+          type: response.type,
+          name: response.fileName,
+        });
+
+        data.append('ket', selectedKeterangan);
+        data.append(
+          'janji_bayar',
+          moment(tanggalJanjiBayar).format('YYYY-MM-DD'),
+        );
+
+        try {
+          const response = await axios.post(
+            'https://brisik.xyz/api/v1/aktivitas',
+            data,
+            {
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`,
+              },
             },
-            body: data,
-          };
-          fetch(`${BASE_URL_API}/v1/aktivitas`, config)
-            .then(res => {
-              console.log('RES AKTIVITAS', res);
-              Alert.alert('Berhasil Menambah Aktifitas');
-              navigation.navigate('Home');
-            })
-            .catch(err => {
-              console.log(err);
-              Alert.alert('Gagal Menambah Aktifitas, Silahkan Coba Lagi');
-            })
-            .finally(() => {
-              setLoading(false);
-            });
-        } else setLoading(false);
-      });
+          );
+          if (response.status === 201) {
+            console.log('RES AKTIVITAS', response);
+            Alert.alert('Berhasil Menambah Aktifitas');
+            navigation.navigate('Home');
+          } else {
+            console.log('RES GAGAL', response.data);
+            Alert.alert('Gagal Menambah Aktifitas, Silahkan Coba Lagi');
+          }
+        } catch (error) {
+          console.log(error.response.data);
+          Alert.alert('Gagal Menambah Aktifitas, Silahkan Coba Lagi');
+        } finally {
+          setLoading(false);
+        }
+      }
     }
   };
 
@@ -149,9 +141,9 @@ export default function DetailNasabah({navigation, route}) {
           console.log('ImagePicker Error: ', res.error);
         } else if (res.customButton) {
           console.log('User tapped custom button: ', res.customButton);
-          // alert(res.customButton);
         } else {
           setImage(res.assets[0]);
+          // console.log(res);
         }
       },
     );
@@ -174,18 +166,18 @@ export default function DetailNasabah({navigation, route}) {
 
   const [datePickerVisible, setDatePickerVisible] = useState(false);
   // Perbarui fungsi showDatePicker untuk menampilkan date picker yang sesuai
-  // Perbarui fungsi showDatePicker untuk menampilkan date picker yang sesuai
-  const showDatePicker = type => {
-    // Set the selectedDate based on the type
-    if (type === 'kunjungan') {
-      setSelectedDate(tanggalKunjungan);
-      setDatePickerVisibleKunjungan(true); // Tampilkan date picker kunjungan
-      setDatePickerVisibleJanjiBayar(false); // Sembunyikan date picker janji bayar
-    } else if (type === 'janjiBayar') {
-      setSelectedDate(tanggalJanjiBayar);
-      setDatePickerVisibleKunjungan(false); // Sembunyikan date picker kunjungan
-      setDatePickerVisibleJanjiBayar(true); // Tampilkan date picker janji bayar
-    }
+  const showDatePickerKunjungan = () => {
+    setDatePickerVisible(true); // Tampilkan date picker
+    setDatePickerVisibleKunjungan(true); // Tampilkan date picker kunjungan
+    setDatePickerVisibleJanjiBayar(false); // Sembunyikan date picker janji bayar
+    setSelectedDate(tanggalKunjungan); // Tetapkan tanggal kunjungan
+  };
+
+  const showDatePickerJanjiBayar = () => {
+    setDatePickerVisible(true); // Tampilkan date picker
+    setDatePickerVisibleKunjungan(false); // Sembunyikan date picker kunjungan
+    setDatePickerVisibleJanjiBayar(true); // Tampilkan date picker janji bayar
+    setSelectedDate(tanggalJanjiBayar); // Tetapkan tanggal janji bayar
   };
   const hideDatePicker = () => {
     setDatePickerVisibleKunjungan(false);
@@ -235,11 +227,6 @@ export default function DetailNasabah({navigation, route}) {
           <View>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <Icon name="credit-card" size={wp(12)} color={COLOR.WHITE} />
-              {/*           
-              <Image
-                source={require('../../Assets/brisik.png')}
-                style={{width: wp(10), height: wp(10), borderRadius: wp(1)}}
-              /> */}
               <Text
                 style={[styles.TextBlack, {marginLeft: wp(2)}]}
                 numberOfLines={1}>
@@ -286,7 +273,7 @@ export default function DetailNasabah({navigation, route}) {
           Tanggal Kunjungan :
         </Text>
         <TouchableOpacity
-          onPress={() => showDatePicker('kunjungan')} // Tampilkan date picker kunjungan
+          onPress={() => showDatePickerKunjungan()}
           style={[styles.BtnDate]}>
           <Text
             style={{
@@ -342,7 +329,7 @@ export default function DetailNasabah({navigation, route}) {
               Tanggal Janji Bayar :
             </Text>
             <TouchableOpacity
-              onPress={() => showDatePicker('janjiBayar')}
+              onPress={() => showDatePickerJanjiBayar()}
               style={[styles.BtnDate, {marginTop: wp(2)}]}>
               <Text style={{fontSize: wp(5), color: '#fff'}}>
                 {moment(tanggalJanjiBayar).format('L')}
