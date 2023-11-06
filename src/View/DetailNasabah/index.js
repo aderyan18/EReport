@@ -31,7 +31,8 @@ export default function DetailNasabah({navigation, route}) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [tanggalKunjungan, setTanggalKunjungan] = useState(new Date());
   const [tanggalJanjiBayar, setTanggalJanjiBayar] = useState(new Date());
-  const keterangan = ['Sudah Bayar', 'Restruct', 'Janji Bayar'];
+  const keterangan = ['Sudah Bayar', 'Restruct', 'Janji Bayar', 'Lainnya'];
+  const [detail, setDetail] = useState('');
   const debitur = route?.params?.item;
   const [kunjungan, setKunjungan] = useState('');
 
@@ -61,6 +62,7 @@ export default function DetailNasabah({navigation, route}) {
         data.append('debitur_id', debitur.id);
         data.append('kunjungan', kunjungan);
         data.append('tanggal', moment(tanggalKunjungan).format('YYYY-MM-DD'));
+        data.append('detail', detail);
         data.append('gambar', {
           uri: response.uri,
           type: response.type,
@@ -286,6 +288,7 @@ export default function DetailNasabah({navigation, route}) {
         <DateTimePickerModal
           isVisible={datePickerVisibleKunjungan}
           mode="date"
+          minimumDate={new Date('2023-01-01')}
           onConfirm={handleConfirm}
           onCancel={hideDatePicker}
         />
@@ -344,6 +347,34 @@ export default function DetailNasabah({navigation, route}) {
           </View>
         )}
         {/* Janji Bayar true end*/}
+
+        {/* Lainnya True Start */}
+        {selectedKeterangan === 'Lainnya' && (
+          <View style={{marginTop: wp(2)}}>
+            <Text
+              style={{
+                fontSize: wp(4),
+                color: COLOR.BLACK,
+                marginLeft: wp(5),
+                marginTop: wp(2),
+              }}>
+              Detail Keterangan :
+            </Text>
+            <TextInput
+              style={[styles.TxtKet]}
+              placeholder="Isi keterangan anda..."
+              placeholderTextColor={COLOR.BLACK}
+              value={detail}
+              activeUnderlineColor={'transparent'}
+              underlineColor={'transparent'}
+              cursorColor={COLOR.BLACK}
+              multiline={true}
+              outlineColor="#fff"
+              onChangeText={text => setDetail(text)}
+            />
+          </View>
+        )}
+        {/* Lainnya True End */}
         <TouchableOpacity
           onPress={() => takePicture()}
           style={[styles.BtnPicture]}>
@@ -496,5 +527,17 @@ const styles = StyleSheet.create({
     marginTop: wp(9),
     alignSelf: 'center',
     borderRadius: wp(2),
+  },
+  TxtKet: {
+    height: wp(25),
+    borderRadius: wp(2),
+    fontSize: wp(5),
+    backgroundColor: COLOR.GREY,
+    width: wp(90),
+    alignSelf: 'center',
+    color: COLOR.BLACK,
+    marginTop: wp(2),
+    borderWidth: wp(0.5),
+    borderColor: COLOR.PRIMARY,
   },
 });
