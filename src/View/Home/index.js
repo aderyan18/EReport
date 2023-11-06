@@ -32,6 +32,7 @@ export default function Home({navigation}) {
   const [npl, setNpl] = useState({});
   const [isUserLoaded, setIsUserLoaded] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [statistic, setStatistic] = useState({});
 
   const getUserInfo = async () => {
     await AsyncStorage.getItem('token', async (err, token) => {
@@ -56,6 +57,53 @@ export default function Home({navigation}) {
       }
     });
   };
+  const getUserStatistic = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const response = await axios.get(
+          `${BASE_URL_API}/v1/riwayat/statistic`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+        console.log('Statistic :', response.data.data);
+        setStatistic(response.data?.data);
+        setIsUserLoaded(true);
+        setIsLoading(false);
+      } else {
+        console.log('Token tidak ditemukan.');
+      }
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error);
+      if (error.response) {
+        console.error('Status Code:', error.response.status);
+        console.error('Data:', error.response.data);
+      }
+    }
+  };
+  function formatToRupiah(angka) {
+    if (angka !== undefined && angka !== null) {
+      const numberString = angka.toString(); // Pastikan angka tidak undefined
+      const split = numberString.split('.');
+      const sisa = split[0].length % 3;
+      let rupiah = split[0].substr(0, sisa);
+      const ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+      if (ribuan) {
+        const separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+      }
+
+      rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+      return 'Rp. ' + rupiah;
+    } else {
+      return 'Rp. 0'; // Nilai default jika angka tidak valid
+    }
+  }
 
   const getDpk = async () => {
     try {
@@ -249,6 +297,8 @@ export default function Home({navigation}) {
     getUserInfo();
     getDpk();
     getNpl();
+    getUserStatistic();
+    // console.log('tes:', statistic.dpk_1[2]);
     // console.log('DPK MAP:', dpk.dpk[1]);
     // console.log('NPL MAP:', npl.npl['Kurang Lancar']);
   }, [refreshing]);
@@ -314,9 +364,21 @@ export default function Home({navigation}) {
             {/* dpk start */}
 
             {/* TES FUNCTION START */}
-            {rekdpk(1, dpk[1], 'Rp. 100.000.00')}
-            {rekdpk(2, dpk[2], 'Rp. 1.100.000.00')}
-            {rekdpk(3, dpk[3], 'Rp. 5.500.000.00')}
+            {rekdpk(1, dpk[1], formatToRupiah(statistic.dpk_1))}
+            {rekdpk(2, dpk[2], formatToRupiah(statistic.dpk_2))}
+            {rekdpk(3, dpk[3], formatToRupiah(statistic.dpk_3))}
+            <View
+              style={[styles.DPKcontent, {height: wp(10), paddingLeft: wp(3)}]}>
+              <Text
+                style={{
+                  color: COLOR.BLACK,
+                  fontSize: wp(3.5),
+                  marginLeft: wp(1.5),
+                  fontWeight: 'bold',
+                }}>
+                Total : {formatToRupiah(statistic.dpk_total)}
+              </Text>
+            </View>
             {/* TES FUNCTION END */}
 
             {/* dpk end */}
@@ -342,29 +404,57 @@ export default function Home({navigation}) {
               <View
                 style={{
                   width: wp(95),
-                  height: wp(65),
                   // backgroundColor: COLOR.PRIMARY,
                 }}>
                 {rekNPL(
                   'hand-o-up',
                   'Kurang Lancar',
-                  'Rp. 100.000.00',
+                  formatToRupiah(statistic.npl_kurang_lancar),
                   npl['Kurang Lancar'],
                 )}
                 {rekNPL(
                   'minus',
                   'Diragukan',
-                  'Rp. 1.100.000.00',
+                  formatToRupiah(statistic.npl_diragukan),
                   npl['Diragukan'],
                 )}
-                {rekNPL('bitbucket', 'Macet', 'Rp. 5.500.000.00', npl['Macet'])}
+                {rekNPL(
+                  'bitbucket',
+                  'Macet',
+                  formatToRupiah(statistic.npl_macet),
+                  npl['Macet'],
+                )}
               </View>
+              <View
+                style={{
+                  width: wp(95),
+                  height: wp(10),
+                  backgroundColor: COLOR.WHITE,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  borderWidth: 1,
+                  borderColor: COLOR.PRIMARY,
+                  borderRadius: wp(5),
+                  marginTop: wp(1),
+                  paddingLeft: wp(3),
+                }}>
+                <Text
+                  style={{
+                    color: COLOR.BLACK,
+                    fontSize: wp(3.5),
+                    marginLeft: wp(1.5),
+                    fontWeight: 'bold',
+                  }}>
+                  Total : {formatToRupiah(statistic.npl_total)}
+                </Text>
+              </View>
+
               <TouchableOpacity
                 onPress={() => navigation.navigate('DaftarNasabah')}
                 style={{
-                  // marginTop: wp(2),
+                  marginTop: wp(2),
                   width: wp(95),
-                  height: wp(12),
+                  height: wp(11),
                   backgroundColor: COLOR.SECONDARYPRIMARY,
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -388,7 +478,7 @@ export default function Home({navigation}) {
                 style={{
                   marginTop: wp(2),
                   width: wp(95),
-                  height: wp(12),
+                  height: wp(11),
                   backgroundColor: COLOR.RED,
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -427,7 +517,7 @@ const styles = StyleSheet.create({
   },
   DPKcontent: {
     width: wp(95),
-    height: wp(20),
+    height: wp(17.5),
     backgroundColor: COLOR.WHITE,
     flexDirection: 'row',
     alignItems: 'center',
