@@ -31,21 +31,11 @@ export default function Login({navigation}) {
     status: true,
   });
   const showPass = () => {
-    if (icon.icon === 'eye') {
-      setIcon({
-        ...icon,
-        icon: 'minus',
-        status: true, // Perbarui status ke true agar kata sandi terlihat
-      });
-    } else {
-      setIcon({
-        ...icon,
-        icon: 'eye',
-        status: false, // Perbarui status ke false agar kata sandi tersembunyi
-      });
-    }
+    setIcon(icon => ({
+      icon: icon.status ? 'eye' : 'minus',
+      status: !icon.status,
+    }));
   };
-
   const cekNull = e => {
     if (e == '') {
       return true;
@@ -165,7 +155,6 @@ export default function Login({navigation}) {
                 <TextInput
                   placeholder="Password"
                   underlineColor="transparent"
-                  keyboardType={'visible-password'}
                   secureTextEntry={icon.status}
                   onChangeText={text => setPassword(text)}
                   value={password}

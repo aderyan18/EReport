@@ -362,7 +362,7 @@ export default function DetailNasabah({navigation, route}) {
             </Text>
             <TextInput
               style={[styles.TxtKet]}
-              placeholder="Isi keterangan anda..."
+              placeholder="Keterangan tambahan..."
               placeholderTextColor={COLOR.BLACK}
               value={detail}
               activeUnderlineColor={'transparent'}

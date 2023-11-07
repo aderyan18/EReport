@@ -303,8 +303,7 @@ export default function Home({navigation}) {
     // console.log('NPL MAP:', npl.npl['Kurang Lancar']);
   }, [refreshing]);
   return (
-    <View style={{flex: 1}}>
-      <View style={{height: wp(10)}}></View>
+    <SafeAreaView style={{flex: 1}}>
       <TouchableOpacity style={[styles.Profile]}>
         <Image
           source={require('../../Assets/user.png')}
@@ -502,7 +501,7 @@ export default function Home({navigation}) {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
