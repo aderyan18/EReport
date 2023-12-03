@@ -219,6 +219,7 @@ export default function RekNpl() {
                   fontWeight: 'bold',
                   left: wp(2),
                   fontSize: wp(3.5),
+                  position: 'absolute',
                 }}>
                 {parseInt(persen.persen_kurang_lancar)}%
               </Text>
