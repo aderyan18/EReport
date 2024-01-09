@@ -274,9 +274,7 @@ export default function DetailNasabah({navigation, route}) {
           }}>
           Tanggal Kunjungan :
         </Text>
-        <TouchableOpacity
-          onPress={() => showDatePickerKunjungan()}
-          style={[styles.BtnDate]}>
+        <View style={[styles.BtnDate]}>
           <Text
             style={{
               fontSize: wp(5),
@@ -284,14 +282,8 @@ export default function DetailNasabah({navigation, route}) {
             }}>
             {moment(tanggalKunjungan).format('L')}
           </Text>
-        </TouchableOpacity>
-        <DateTimePickerModal
-          isVisible={datePickerVisibleKunjungan}
-          mode="date"
-          minimumDate={new Date('2023-01-01')}
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
-        />
+        </View>
+
         {/* DATE FROM */}
 
         {/* KETERANGAN START */}
